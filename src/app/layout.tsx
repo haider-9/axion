@@ -18,18 +18,18 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://axionlighting.com'),
   title: 'Axion Lighting Solutions',
   description:
     'Premium indoor and outdoor lighting solutions. Modern, trustworthy, and luxurious designs with a warm touch.',
-  keywords:
-    'lighting, indoor lighting, outdoor lighting, premium, modern, luxury, axion',
+  keywords: 'lighting, indoor lighting, outdoor lighting, premium, modern, luxury, axion',
   openGraph: {
     title: 'Axion Lighting Solutions',
     description:
       'Premium indoor and outdoor lighting solutions. Modern, trustworthy, and luxurious designs with a warm touch.',
     type: 'website',
     locale: 'en_US',
-    url: 'https://yourdomain.com',
+    url: 'https://axionlighting.com',
     siteName: 'Axion Lighting Solutions',
     images: [
       {
@@ -61,9 +61,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.variable} ${inter.variable} ${inter.variable}`}>
-        <Layout>
-          {children}
-        </Layout>
+        <Layout>{children}</Layout>
         <FloatingIcon />
       </body>
     </html>
