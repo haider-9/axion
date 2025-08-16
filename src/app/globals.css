@@ -4,14 +4,36 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-
   /* Primary Colors */
-  --color-navy: #0C1E33;      /* Deep Navy / Midnight Blue */
+  --color-navy: #0077B6;      /* Deep Navy / Midnight Blue */
   --color-gold: #E1B857;      /* Warm Gold */
 
   /* Accent Colors */
   --color-warm-white: #F5F3EB; /* Soft Warm White */
   --color-teal: #2CA6A4;       /* Vibrant Teal */
+
+  /* New Color Styles from Image */
+  --color-primary: var(--color-navy);
+  --color-primary-accent: #0077b6;
+  --color-logo: #0D3361;
+  --color-primary-dark: #081625;
+  --color-primary-light: #3a5a7a;
+  --color-secondary: var(--color-teal);
+  --color-secondary-dark: #1e7d7b;
+  --color-secondary-light: #7ad6d4;
+  --color-background: var(--color-warm-white);
+  --color-cards-input: #ffffff;
+  --color-border: #e5e7eb;
+  --color-main-text: var(--color-navy);
+  --color-secondary-text: #6b7280;
+  --color-placeholder: #9ca3af;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-golden: var(--color-gold);
+  --color-dark-bluish-accent: #1e3a8a;
+  --color-midnight-blue: var(--color-navy);
+  --color-text: var(--color-navy);
 
   /* Font Variables */
   --font-poppins: var(--font-poppins);
@@ -20,9 +42,9 @@
   /* UI Colors - updated to match your palette */
   --background: var(--color-warm-white);
   --foreground: var(--color-navy);
-  --card: #fff;
+  --card: var(--color-cards-input);
   --card-foreground: var(--color-navy);
-  --popover: #fff;
+  --popover: var(--color-cards-input);
   --popover-foreground: var(--color-navy);
   --primary: var(--color-navy);
   --primary-foreground: #fff;
@@ -32,9 +54,9 @@
   --muted-foreground: var(--color-navy);
   --accent: var(--color-teal);
   --accent-foreground: #fff;
-  --destructive: #ef4444;
-  --border: #e5e7eb;
-  --input: #e5e7eb;
+  --destructive: var(--color-error);
+  --border: var(--color-border);
+  --input: var(--color-border);
   --ring: var(--color-teal);
 
   /* Chart and sidebar colors remain unchanged */
@@ -43,13 +65,13 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: #fff;
+  --sidebar: var(--color-cards-input);
   --sidebar-foreground: var(--color-navy);
   --sidebar-primary: var(--color-navy);
   --sidebar-primary-foreground: #fff;
   --sidebar-accent: var(--color-gold);
   --sidebar-accent-foreground: var(--color-navy);
-  --sidebar-border: #e5e7eb;
+  --sidebar-border: var(--color-border);
   --sidebar-ring: var(--color-teal);
 
   --radius: 0.625rem;
@@ -101,42 +123,6 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-poppins), Arial, Helvetica, sans-serif;
-}
-
-.dark {
-  --background: var(--color-navy);
-  --foreground: #ededed;
-  --card: #171717;
-  --card-foreground: #ededed;
-  --popover: #171717;
-  --popover-foreground: #ededed;
-  --primary: var(--color-gold);
-  --primary-foreground: var(--color-navy);
-  --secondary: var(--color-teal);
-  --secondary-foreground: #fff;
-  --muted: #23272f;
-  --muted-foreground: #ededed;
-  --accent: var(--color-gold);
-  --accent-foreground: var(--color-navy);
-  --destructive: #ef4444;
-  --border: #23272f;
-  --input: #23272f;
-  --ring: var(--color-teal);
-
-  /* Chart and sidebar colors remain unchanged */
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: var(--color-navy);
-  --sidebar-foreground: #ededed;
-  --sidebar-primary: var(--color-gold);
-  --sidebar-primary-foreground: var(--color-navy);
-  --sidebar-accent: var(--color-teal);
-  --sidebar-accent-foreground: #fff;
-  --sidebar-border: #23272f;
-  --sidebar-ring: var(--color-teal);
 }
 
 @layer base {
@@ -200,7 +186,9 @@ html {
   scrollbar-width: thin;
   scrollbar-color: var(--color-navy) var(--color-warm-white);
 }
-
+body{
+  background-color: var(--accent-foreground);
+}
 /* Custom Scrollbar for Dark Mode */
 .dark ::-webkit-scrollbar-track {
   background: var(--color-navy);

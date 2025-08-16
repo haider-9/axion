@@ -15,7 +15,7 @@ export type CartSlice = {
   clearCart: () => void;
 };
 
-export const createCartSlice: StateCreator<CartSlice> = (set, get) => ({
+export const createCartSlice: StateCreator<CartSlice> = (set) => ({
   items: [],
   totalPrice: 0,
 
