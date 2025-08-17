@@ -2,7 +2,7 @@ import Collections from '@/features/landing-page/CollectionSection';
 import AboutSection from '@/features/landing-page/ExploreSection';
 import Featured from '@/features/landing-page/FeaturedProducts';
 import HeroSection from '@/features/landing-page/HeroSection';
-import SaleSection from '@/features/OnSale';
+import SaleSection from '@/features/landing-page/OnSale';
 import TestimonialsSection from '@/features/landing-page/TestimonialsSection';
 import HowItWorksSection from '@/features/landing-page/HowItWorksSection';
 import BlogSection from '@/features/landing-page/BlogSection';

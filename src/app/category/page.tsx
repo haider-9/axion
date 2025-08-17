@@ -12,7 +12,7 @@ const productCategories = [
     description: 'Illuminate every corner with elegance.',
     items: '45 Items',
     image: '/prodcut-1.jpg',
-    href: '/product/indoor',
+    href: '/category/indoor',
   },
   {
     id: 2,
@@ -20,7 +20,7 @@ const productCategories = [
     description: 'Light powered by the sun.',
     items: '29 Items',
     image: '/prodcut-2.jpg',
-    href: '/product/solar',
+    href: '/category/solar',
   },
   {
     id: 3,
@@ -28,7 +28,7 @@ const productCategories = [
     description: 'Bold lighting for open spaces',
     items: '37 Items',
     image: '/prodcut-3.jpg',
-    href: '/product/outdoor',
+    href: '/category/outdoor',
   },
   {
     id: 4,
@@ -36,7 +36,7 @@ const productCategories = [
     description: 'Best Products currently on sale for a limited time',
     items: '13 Items',
     image: '/prodcut-4.jpg',
-    href: '/product/sale',
+    href: '/category/sale',
   },
 ];
 

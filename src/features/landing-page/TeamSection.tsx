@@ -81,7 +81,8 @@ const TeamSection = () => {
                     <Image
                       src={member.image}
                       alt={member.name}
-                      fill
+                      width={100}
+                      height={100}
                       className="object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
                     />
                   </div>
