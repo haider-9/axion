@@ -9,50 +9,50 @@ const teamMembers = [
     id: 1,
     name: 'Leslie Alexander',
     title: 'Co-Founder & CEO',
-    image: '/prodcut-7.jpg'
+    image: '/prodcut-7.jpg',
   },
   {
     id: 2,
     name: 'Sarah Williams',
     title: 'Head of Design',
-    image: '/prodcut-1.jpg'
+    image: '/prodcut-1.jpg',
   },
   {
     id: 3,
     name: 'David Smith',
     title: 'Operations Manager',
-    image: '/prodcut-2.jpg'
+    image: '/prodcut-2.jpg',
   },
   {
     id: 4,
     name: 'James Turner',
     title: 'Lead Engineer',
-    image: '/prodcut-3.jpg'
+    image: '/prodcut-3.jpg',
   },
   {
     id: 5,
     name: 'Ethan Roberts',
     title: 'Sales Director',
-    image: '/prodcut-4.jpg'
+    image: '/prodcut-4.jpg',
   },
   {
     id: 6,
     name: 'Daniel Lee',
     title: 'Creative Director',
-    image: '/prodcut-5.jpg'
+    image: '/prodcut-5.jpg',
   },
   {
     id: 7,
     name: 'Emilie Carter',
     title: 'Product Designer',
-    image: '/prodcut-6.jpg'
+    image: '/prodcut-6.jpg',
   },
   {
     id: 8,
     name: 'Olivia Martin',
     title: 'Marketing Lead',
-    image: '/prodcut-7.jpg'
-  }
+    image: '/prodcut-7.jpg',
+  },
 ];
 
 const TeamSection = () => {
@@ -74,10 +74,10 @@ const TeamSection = () => {
           {teamMembers.map((member) => (
             <div key={member.id} className="text-center group">
               {/* Team Member Card */}
-              <div className="bg-white rounded-xl shadow-lg p-6 h-48 flex flex-col items-center justify-center hover:shadow-xl transition-shadow duration-300">
+              <div className="bg-white rounded-xl shadow-lg p-6 h-48 flex flex-col items-center justify-center">
                 {/* Team Member Image */}
                 <div className="relative mb-4">
-                  <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                  <div className="w-20 h-20 rounded-full overflow-hidden">
                     <Image
                       src={member.image}
                       alt={member.name}
@@ -92,9 +92,7 @@ const TeamSection = () => {
                 <h3 className="font-bold text-[var(--color-main-text)] text-lg mb-2">
                   {member.name}
                 </h3>
-                <p className="text-[var(--color-secondary-text)] text-sm">
-                  {member.title}
-                </p>
+                <p className="text-[var(--color-secondary-text)] text-sm">{member.title}</p>
               </div>
             </div>
           ))}
@@ -102,7 +100,7 @@ const TeamSection = () => {
 
         {/* Call to Action */}
         <div className="text-center">
-        <Link
+          <Link
             href="#"
             className="inline-flex items-center bg-[var(--color-logo)] text-white px-6 py-3 rounded-lg font-medium shadow-md transition-colors group"
           >
