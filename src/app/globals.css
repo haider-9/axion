@@ -1,21 +1,21 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
   /* Primary Colors */
-  --color-navy: #0077B6;      /* Deep Navy / Midnight Blue */
-  --color-gold: #E1B857;      /* Warm Gold */
+  --color-navy: #0077b6; /* Deep Navy / Midnight Blue */
+  --color-gold: #e1b857; /* Warm Gold */
 
   /* Accent Colors */
-  --color-warm-white: #F5F3EB; /* Soft Warm White */
-  --color-teal: #2CA6A4;       /* Vibrant Teal */
+  --color-warm-white: #f5f3eb; /* Soft Warm White */
+  --color-teal: #2ca6a4; /* Vibrant Teal */
 
   /* New Color Styles from Image */
   --color-primary: var(--color-navy);
   --color-primary-accent: #0077b6;
-  --color-logo: #0D3361;
+  --color-logo: #0d3361;
   --color-primary-dark: #081625;
   --color-primary-light: #3a5a7a;
   --color-secondary: var(--color-teal);
@@ -121,7 +121,12 @@ body {
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-poppins), Arial, Helvetica, sans-serif;
 }
 
@@ -186,7 +191,7 @@ html {
   scrollbar-width: thin;
   scrollbar-color: var(--color-navy) var(--color-warm-white);
 }
-body{
+body {
   background-color: var(--accent-foreground);
 }
 /* Custom Scrollbar for Dark Mode */
@@ -216,6 +221,9 @@ body{
 /* Smooth Scrolling */
 html {
   scroll-behavior: smooth;
+}
+Button {
+  cursor: pointer;
 }
 
 /* Enhanced Focus States */

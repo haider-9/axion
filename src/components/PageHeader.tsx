@@ -34,8 +34,8 @@ const PageHeader = ({ title, titleHighlight, subtitle, breadcrumbs }: PageHeader
     })();
 
   return (
-    <div className="bg-white py-8 border-b border-gray-100">
-      <div className="max-w-[85rem] mx-auto px-4 sm:px-6">
+    <div className="py-6">
+      <div >
         {/* Breadcrumbs */}
         <div className="text-md font-bold text-[var(--color-logo)] mb-6">
           {defaultBreadcrumbs.map((crumb, index) => (

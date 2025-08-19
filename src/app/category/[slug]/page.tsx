@@ -4,9 +4,9 @@ import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
 import PageHeader from '@/components/PageHeader';
 import Pagination from '@/components/Pagination';
-import Image from 'next/image';
+// import Image from 'next/image';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import ProductCard from '@/components/ProductCard';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -18,14 +18,14 @@ import {
 
 // Dummy product data
 const products = [
-  { id: 1, name: 'Square Wall Lamp', price: 12500, img: '/prodcut-1.jpg' },
-  { id: 2, name: 'Cancorde Lamp', price: 59999, img: '/prodcut-2.jpg' },
-  { id: 3, name: 'Hanging Lights', price: 3999, img: '/prodcut-3.jpg' },
-  { id: 4, name: 'Strip Chandelier', price: 49500, img: '/prodcut-4.jpg' },
-  { id: 5, name: 'Neom Chandelier', price: 29999, img: '/prodcut-5.jpg' },
-  { id: 6, name: 'Lighthouse Lamp', price: 9500, img: '/prodcut-6.jpg' },
-  { id: 7, name: 'Vanity Light', price: 19500, img: '/prodcut-7.jpg' },
-  { id: 8, name: 'Square Wall Lamp', price: 12500, img: '/prodcut-8.jpg' },
+  { id: 1, slug: 'square-wall-lamp', name: 'Square Wall Lamp', price: 12500, img: '/prodcut-1.jpg' },
+  { id: 2, slug: 'cancorde-lamp', name: 'Cancorde Lamp', price: 59999, img: '/prodcut-2.jpg' },
+  { id: 3, slug: 'hanging-lights', name: 'Hanging Lights', price: 3999, img: '/prodcut-3.jpg' },
+  { id: 4, slug: 'strip-chandelier', name: 'Strip Chandelier', price: 49500, img: '/prodcut-4.jpg' },
+  { id: 5, slug: 'neom-chandelier', name: 'Neom Chandelier', price: 29999, img: '/prodcut-5.jpg' },
+  { id: 6, slug: 'lighthouse-lamp', name: 'Lighthouse Lamp', price: 9500, img: '/prodcut-6.jpg' },
+  { id: 7, slug: 'vanity-light', name: 'Vanity Light', price: 19500, img: '/prodcut-7.jpg' },
+  { id: 8, slug: 'square-wall-lamp-2', name: 'Square Wall Lamp', price: 12500, img: '/prodcut-8.jpg' },
 ];
 
 const CategoryPage = () => {
@@ -93,27 +93,15 @@ const CategoryPage = () => {
         {/* Product Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {currentItems.map((item) => (
-            <Card
+            <ProductCard
               key={item.id}
-              className="rounded-2xl overflow-hidden py-0 pb-6 shadow-md hover:shadow-xl transition transform hover:-translate-y-1"
-            >
-              <div className="relative w-full h-56">
-                <Image
-                  src={item.img}
-                  alt={item.name}
-                  width={100}
-                  height={100}
-                  className="object-cover object-center size-full"
-                />
-              </div>
-              <CardHeader>
-                <CardTitle className="text-lg">{item.name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 mb-4">Rs. {item.price.toLocaleString()}</p>
-                <Button className="w-full">Add to Cart</Button>
-              </CardContent>
-            </Card>
+              id={item.id}
+              name={item.name}
+              price={item.price}
+              img={item.img}
+              href={`/product/${item.slug}`}
+              onAddToCart={() => {}}
+            />
           ))}
         </div>
 

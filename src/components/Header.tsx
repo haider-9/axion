@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -36,6 +36,22 @@ const Header = () => {
   const [showProductsDropdown, setShowProductsDropdown] = useState(false);
   const [showBlogDropdown, setShowBlogDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [hideOnScroll, setHideOnScroll] = useState(false);
+
+  // Hide header on scroll down, show on scroll up
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY && window.scrollY > 50) {
+        setHideOnScroll(true);
+      } else {
+        setHideOnScroll(false);
+      }
+      lastScrollY = window.scrollY;
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navLinks = [
     { name: 'Home', href: '/' },
@@ -116,7 +132,9 @@ const Header = () => {
   const pillTarget = hovered ?? pathname;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-around  py-4 mx-auto bg-transparent">
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-around py-4 mx-auto bg-transparent transition-transform duration-300 ${hideOnScroll ? '-translate-y-full' : 'translate-y-0'}`}
+    >
       {/* Logo */}
       <div className="size-16 flex items-center">
         <Image

@@ -2,11 +2,11 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Palette, Globe2, Leaf, ArrowRight } from 'lucide-react';
+import {ArrowRight } from 'lucide-react';
 
 const HeroSection = () => {
   return (
-    <section className="relative flex flex-col border-8 border-accent-foreground md:flex-row items-center justify-between overflow-hidden bg-[var(--color-primary-dark)] text-[var(--color-warm-white)] py-10 min-h-[80vh] md:min-h-screen">
+    <section className="relative flex flex-col border-8 border-accent-foreground md:flex-row items-center justify-between bg-[var(--color-primary-dark)] text-[var(--color-warm-white)] pb-10 min-h-[80vh] md:min-h-screen">
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
@@ -31,22 +31,6 @@ const HeroSection = () => {
             Smart lighting redefined, blending elegance, efficiency, and innovation to brighten your
             world.
           </p>
-
-          <ul className="space-y-2 text-xl ">
-            <li className="flex items-center gap-2">
-              <Palette className="w-5 h-5 text-[var(--color-background)]" />
-              <span>Modern Design</span>
-            </li>
-            <li className="flex items-center gap-2">
-              <Globe2 className="w-5 h-5 text-[var(--color-background)]" />
-              <span>Global Delivery</span>
-            </li>
-            <li className="flex items-center gap-2">
-              <Leaf className="w-5 h-5 text-[var(--color-background)]" />
-              <span>Energy Efficient</span>
-            </li>
-          </ul>
-
           {/* CTA Button */}
           <Link
             href="#"
@@ -72,7 +56,7 @@ const HeroSection = () => {
               alt="Lamp"
               width={180}
               height={180}
-              className="drop-shadow-2xl relative z-10 top-14 sm:w-[300px] sm:h-[400px]"
+              className="drop-shadow-2xl relative z-10 sm:w-[300px] sm:h-[400px]"
             />
 
             {/* Table directly below lamp */}
