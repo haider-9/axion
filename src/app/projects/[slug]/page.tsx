@@ -57,7 +57,7 @@ const ProjectDetailPage: React.FC = () => {
   return (
     <>
       <div className=" max-w-[85rem] mx-auto mb-10 *:text-black">
-      <PageHeader title="" />
+        <PageHeader title="" />
         {/* Title + Hero */}
         <div className="grid md:grid-cols-2 gap-10 items-start">
           <div>

@@ -65,25 +65,27 @@ const TestimonialsSection = () => {
         {/* Testimonials Carousel */}
         <div className="relative">
           {/* Navigation Arrows */}
-          <Button
-            onClick={prevTestimonial}
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-[var(--color-primary)] text-white rounded-full flex items-center justify-center hover:bg-[var(--color-primary-dark)] transition-colors shadow-lg"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </Button>
-
-          <Button
-            onClick={nextTestimonial}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-[var(--color-primary)] text-white rounded-full flex items-center justify-center hover:bg-[var(--color-primary-dark)] transition-colors shadow-lg"
-          >
-            <ArrowRight className="w-6 h-6" />
-          </Button>
+          {/* Mobile: arrows below card, Desktop: arrows on sides */}
+          <div className="hidden md:block">
+            <Button
+              onClick={prevTestimonial}
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-[var(--color-primary)] text-white rounded-full flex items-center justify-center hover:bg-[var(--color-primary-dark)] transition-colors shadow-lg"
+            >
+              <ArrowLeft className="w-6 h-6" />
+            </Button>
+            <Button
+              onClick={nextTestimonial}
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-[var(--color-primary)] text-white rounded-full flex items-center justify-center hover:bg-[var(--color-primary-dark)] transition-colors shadow-lg"
+            >
+              <ArrowRight className="w-6 h-6" />
+            </Button>
+          </div>
 
           {/* Testimonial Card */}
-          <div className="bg-white rounded-2xl shadow-xl  md:pl-12 max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-8 items-center">
+          <div className="bg-white rounded-2xl shadow-xl md:pl-12 max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               {/* Left Side - Testimonial Content */}
-              <div className="space-y-6">
+              <div className="space-y-6 p-0 sm:p-10">
                 <div className="text-xl text-semibold text-black ">
                   Client Feedback
                 </div>
@@ -116,31 +118,49 @@ const TestimonialsSection = () => {
               </div>
 
               {/* Right Side - Product Image */}
-              <div className="h-full w-full">
+              <div className="h-64 w-full md:h-full flex items-center justify-center">
                 <Image
                   src={currentTestimonial.image}
                   alt="Lighting fixture"
                   width={400}
                   height={400}
-                  className="w-full h-full object-cover rounded-r-2xl"
+                  className="w-full h-full object-cover rounded-2xl md:rounded-r-2xl"
+                  sizes="(max-width: 768px) 100vw, 400px"
+                  priority
                 />
               </div>
             </div>
           </div>
 
-          {/* Pagination Dots */}
-          <div className="flex justify-center gap-2 mt-8">
-            {testimonials.map((_, index) => (
+          {/* Pagination Dots & Mobile Arrows */}
+          <div className="flex flex-col items-center gap-4 mt-8">
+            <div className="flex justify-center gap-2">
+              {testimonials.map((_, index) => (
+                <Button
+                  key={index}
+                  onClick={() => goToTestimonial(index)}
+                  className={`w-3 h-3 rounded-full transition-all ${
+                    index === currentIndex
+                      ? 'bg-[var(--color-primary)] w-4 h-4'
+                      : 'bg-[var(--color-border)] hover:bg-[var(--color-primary-light)]'
+                  }`}
+                />
+              ))}
+            </div>
+            <div className="flex gap-4 md:hidden">
               <Button
-                key={index}
-                onClick={() => goToTestimonial(index)}
-                className={`w-3 h-3 rounded-full transition-all ${
-                  index === currentIndex
-                    ? 'bg-[var(--color-primary)] w-4 h-4'
-                    : 'bg-[var(--color-border)] hover:bg-[var(--color-primary-light)]'
-                }`}
-              />
-            ))}
+                onClick={prevTestimonial}
+                className="w-10 h-10 bg-[var(--color-primary)] text-white rounded-full flex items-center justify-center hover:bg-[var(--color-primary-dark)] transition-colors shadow-lg"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <Button
+                onClick={nextTestimonial}
+                className="w-10 h-10 bg-[var(--color-primary)] text-white rounded-full flex items-center justify-center hover:bg-[var(--color-primary-dark)] transition-colors shadow-lg"
+              >
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>

@@ -34,7 +34,7 @@ const PageHeader = ({ title, titleHighlight, subtitle, breadcrumbs }: PageHeader
     })();
 
   return (
-    <div className="py-6">
+    <div className="py-6 max-w-[85rem] mx-auto">
       <div >
         {/* Breadcrumbs */}
         <div className="text-md font-bold text-[var(--color-logo)] mb-6">

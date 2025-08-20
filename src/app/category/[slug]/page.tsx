@@ -18,19 +18,60 @@ import {
 
 // Dummy product data
 const products = [
-  { id: 1, slug: 'square-wall-lamp', name: 'Square Wall Lamp', price: 12500, img: '/prodcut-1.jpg' },
+  {
+    id: 1,
+    slug: 'square-wall-lamp',
+    name: 'Square Wall Lamp',
+    price: 12500,
+    img: '/prodcut-1.jpg',
+  },
   { id: 2, slug: 'cancorde-lamp', name: 'Cancorde Lamp', price: 59999, img: '/prodcut-2.jpg' },
   { id: 3, slug: 'hanging-lights', name: 'Hanging Lights', price: 3999, img: '/prodcut-3.jpg' },
-  { id: 4, slug: 'strip-chandelier', name: 'Strip Chandelier', price: 49500, img: '/prodcut-4.jpg' },
+  {
+    id: 4,
+    slug: 'strip-chandelier',
+    name: 'Strip Chandelier',
+    price: 49500,
+    img: '/prodcut-4.jpg',
+  },
   { id: 5, slug: 'neom-chandelier', name: 'Neom Chandelier', price: 29999, img: '/prodcut-5.jpg' },
   { id: 6, slug: 'lighthouse-lamp', name: 'Lighthouse Lamp', price: 9500, img: '/prodcut-6.jpg' },
   { id: 7, slug: 'vanity-light', name: 'Vanity Light', price: 19500, img: '/prodcut-7.jpg' },
-  { id: 8, slug: 'square-wall-lamp-2', name: 'Square Wall Lamp', price: 12500, img: '/prodcut-8.jpg' },
+  {
+    id: 8,
+    slug: 'square-wall-lamp-2',
+    name: 'Square Wall Lamp',
+    price: 12500,
+    img: '/prodcut-8.jpg',
+  },
 ];
 
 const CategoryPage = () => {
   const params = useParams();
   const slug = params?.slug as string;
+
+  // Countdown Timer for Sale (HH:MM:SS style)
+  const [timeLeft, setTimeLeft] = React.useState('22:13:49');
+  React.useEffect(() => {
+    if (slug === 'sale') {
+      // Set target time to 22:13:49 from now
+      const targetTime = new Date().getTime() + 22 * 60 * 60 * 1000 + 13 * 60 * 1000 + 49 * 1000;
+      const timer = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = targetTime - now;
+        if (distance <= 0) {
+          clearInterval(timer);
+          setTimeLeft('00:00:00');
+          return;
+        }
+        const hours = String(Math.floor((distance / (1000 * 60 * 60)) % 24)).padStart(2, '0');
+        const minutes = String(Math.floor((distance / (1000 * 60)) % 60)).padStart(2, '0');
+        const seconds = String(Math.floor((distance / 1000) % 60)).padStart(2, '0');
+        setTimeLeft(`${hours}:${minutes}:${seconds}`);
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [slug]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
@@ -46,6 +87,14 @@ const CategoryPage = () => {
         titleHighlight="Lighting"
         subtitle="Illuminate every corner with elegance."
       />
+
+      {/* Countdown Timer for Sale (styled like OnSale.tsx) */}
+      {slug === 'sale' && (
+        <div className="mt-3 text-red-600 font-semibold flex items-center justify-center gap-2 mb-6">
+          <span>⏰ Sale Ends in</span>
+          <span className="text-red-700 font-bold">{timeLeft}</span>
+        </div>
+      )}
 
       <div className="max-w-[85rem] mx-auto px-4 sm:px-6 py-10">
         {/* Filters */}
@@ -73,17 +122,6 @@ const CategoryPage = () => {
               <SelectItem value="high">Above Rs. 20,000</SelectItem>
             </SelectContent>
           </Select>
-
-          {/* Colors */}
-          <div className="flex gap-3 items-center">
-            {['#000', '#fff', '#cfcfcf', '#e0d7c5', '#f4eee2'].map((color, i) => (
-              <div
-                key={i}
-                className="w-8 h-8 rounded-full border cursor-pointer hover:scale-110 transition-transform"
-                style={{ backgroundColor: color }}
-              ></div>
-            ))}
-          </div>
 
           <Button variant="ghost" className="ml-auto text-gray-500 hover:text-black">
             Clear Filters

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import PageHeader from '@/components/PageHeader';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 const projects = [
   {
@@ -87,7 +88,7 @@ const ProjectsPage: React.FC = () => {
       : projects.filter((p) => p.category === activeFilter || p.style === activeFilter);
 
   return (
-    <div className="max-w-[85rem] my-10 px-10 sm:p-0 mx-auto">
+    <div className="max-w-[85rem] my-10 mx-auto">
       {/* PageHeader for consistent header */}
       <PageHeader
         title="Our"
@@ -117,14 +118,14 @@ const ProjectsPage: React.FC = () => {
         {filteredProjects.map((project) => (
           <div
             key={project.id}
-            className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-[400px] md:h-[420px]"
+            className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col"
           >
             <Image
               src={project.image}
               alt={project.title}
               width={600}
               height={400}
-              className="w-full h-2/3 object-cover"
+              className="w-full h-64 object-cover"
             />
             <div className="p-5 flex-1 flex flex-col justify-between">
               <div>
@@ -137,8 +138,12 @@ const ProjectsPage: React.FC = () => {
                 </p>
               </div>
               <div className="mt-4">
-                <Button asChild variant="outline" className="w-full">
-                  <a href={`/projects/${project.id}`}>View Project</a>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full bg-[var(--color-logo)] text-white"
+                >
+                  <Link href={`/projects/${project.slug}`}>View Project</Link>
                 </Button>
               </div>
             </div>

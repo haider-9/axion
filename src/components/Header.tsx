@@ -29,6 +29,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
 const Header = () => {
   const pathname = usePathname();
@@ -37,6 +38,7 @@ const Header = () => {
   const [showBlogDropdown, setShowBlogDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [hideOnScroll, setHideOnScroll] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   // Hide header on scroll down, show on scroll up
   useEffect(() => {
@@ -47,6 +49,14 @@ const Header = () => {
       } else {
         setHideOnScroll(false);
       }
+
+      // Navbar color change logic
+      if (window.scrollY > 150) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+
       lastScrollY = window.scrollY;
     };
     window.addEventListener('scroll', handleScroll);
@@ -133,10 +143,15 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-around py-4 mx-auto bg-transparent transition-transform duration-300 ${hideOnScroll ? '-translate-y-full' : 'translate-y-0'}`}
+      className={cn(
+        `fixed top-0 left-0 right-0 z-50 flex items-center justify-between py-4 px-2 sm:px-6 mx-auto bg-transparent transition-transform duration-300`,
+        [hideOnScroll ? '-translate-y-full' : 'translate-y-0'],
+      )}
     >
       {/* Logo */}
-      <div className="size-16 flex items-center">
+      <div className={cn("size-16 flex items-center transition-colors duration-300",{
+        "border rounded-xl bg-black/30": scrolled
+      })}>
         <Image
           src="/Logo.png"
           alt="Axion Lighting Solutions Logo"
@@ -147,7 +162,9 @@ const Header = () => {
       </div>
 
       {/* Navbar with pill animation */}
-      <div className="relative py-1 px-1 rounded-full shadow-lg backdrop-blur-md bg-gray-300/30">
+      <div className={cn("relative hidden md:block py-1 px-1 rounded-full shadow-lg backdrop-blur-md bg-gray-300/30",{
+        "bg-black/50": scrolled,
+      })}>
         <ul className="flex items-center justify-between relative z-10">
           {navLinks.map((link) => {
             const isTarget = pillTarget === link.href;
@@ -364,7 +381,9 @@ const Header = () => {
       </div>
 
       {/* Icons */}
-      <div className="flex items-center bg-gray-300/50 backdrop-blur-xl rounded-full p-2 shadow-2xl border border-white/20">
+      <div className={cn("flex items-center bg-gray-300/50 backdrop-blur-xl rounded-full p-2 shadow-2xl border border-white/20",{
+        "bg-black/50": scrolled,
+      })}>
         <div className="flex items-center space-x-1">
           {/* Search Dialog */}
           <Dialog>
