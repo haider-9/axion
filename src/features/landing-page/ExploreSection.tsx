@@ -1,10 +1,10 @@
 'use client';
 
 import Image from 'next/image';
-import { PenTool, Leaf, Globe2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { ArrowRight, Globe2, Leaf, PenTool } from 'lucide-react';
 
-const AboutSection = () => {
+const ExploreSection = () => {
   return (
     <section className="relative py-12 sm:py-16 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div className="container min-h-[200px] h-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 items-center">
@@ -60,4 +60,4 @@ const AboutSection = () => {
   );
 };
 
-export default AboutSection;
+export default ExploreSection;

@@ -5,14 +5,13 @@ import {
   Search,
   Handbag,
   UserRound,
-  ChevronDown,
   Clock,
   Star,
   Trash2,
   Plus,
   Minus,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import {
@@ -34,17 +33,15 @@ import { cn } from '@/lib/utils';
 const Header = () => {
   const pathname = usePathname();
   const [hovered, setHovered] = useState<string | null>(null);
-  const [showProductsDropdown, setShowProductsDropdown] = useState(false);
-  const [showBlogDropdown, setShowBlogDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [hideOnScroll, setHideOnScroll] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Hide header on scroll down, show on scroll up
+  // Hide header when scrolling from top
   useEffect(() => {
-    let lastScrollY = window.scrollY;
     const handleScroll = () => {
-      if (window.scrollY > lastScrollY && window.scrollY > 50) {
+      // Hide header when scrolling away from top (scrollY > 0)
+      if (window.scrollY > 0) {
         setHideOnScroll(true);
       } else {
         setHideOnScroll(false);
@@ -56,8 +53,6 @@ const Header = () => {
       } else {
         setScrolled(false);
       }
-
-      lastScrollY = window.scrollY;
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -65,60 +60,13 @@ const Header = () => {
 
   const navLinks = [
     { name: 'Home', href: '/' },
-    { name: 'Products', href: '/category', hasDropdown: true, dropdownType: 'products' },
+    { name: 'Products', href: '/category' },
     { name: 'Projects', href: '/projects' },
     { name: 'About', href: '/about' },
-    { name: 'Blog', href: '/blog', hasDropdown: true, dropdownType: 'blog' },
+    { name: 'Blog', href: '/blog' },
     { name: 'Contact', href: '/contact' },
   ];
 
-  const productCategories = [
-    {
-      name: 'LED Lights',
-      href: '/products/led-lights',
-      image: '/next.svg',
-      description: 'Energy efficient LED solutions',
-    },
-    {
-      name: 'Smart Lighting',
-      href: '/products/smart-lighting',
-      image: '/next.svg',
-      description: 'IoT enabled lighting systems',
-    },
-    {
-      name: 'Industrial Lighting',
-      href: '/products/industrial',
-      image: '/next.svg',
-      description: 'Heavy-duty lighting solutions',
-    },
-    {
-      name: 'Outdoor Lighting',
-      href: '/products/outdoor',
-      image: '/next.svg',
-      description: 'Weather-resistant outdoor lights',
-    },
-  ];
-
-  const blogCategories = [
-    {
-      name: 'Industry News',
-      href: '/blog/industry-news',
-      image: '/next.svg',
-      description: 'Latest updates in lighting technology',
-    },
-    {
-      name: 'Installation Tips',
-      href: '/blog/installation-tips',
-      image: '/next.svg',
-      description: 'Expert installation guides',
-    },
-    {
-      name: 'Case Studies',
-      href: '/blog/case-studies',
-      image: '/next.svg',
-      description: 'Real-world project examples',
-    },
-  ];
 
   const recentSearches = [
     'LED Strip Lights',
@@ -149,7 +97,7 @@ const Header = () => {
       )}
     >
       {/* Logo */}
-      <div className={cn("size-16 flex items-center transition-colors duration-300",{
+      <div className={cn("size-16 flex items-center transition-colors duration-300", {
         "border rounded-xl bg-black/30": scrolled
       })}>
         <Image
@@ -161,8 +109,8 @@ const Header = () => {
         />
       </div>
 
-      {/* Navbar with pill animation */}
-      <div className={cn("relative hidden md:block py-1 px-1 rounded-full shadow-lg backdrop-blur-md bg-gray-300/30",{
+      {/* Desktop Navigation */}
+      <nav className={cn("relative hidden lg:block py-1 px-1 rounded-full shadow-lg backdrop-blur-md bg-gray-300/30", {
         "bg-black/50": scrolled,
       })}>
         <ul className="flex items-center justify-between relative z-10">
@@ -170,31 +118,13 @@ const Header = () => {
             const isTarget = pillTarget === link.href;
 
             return (
-              <h3
+              <li
                 key={link.name}
                 className="relative"
-                onMouseEnter={() => {
-                  setHovered(link.href);
-                  if (link.hasDropdown) {
-                    if (link.dropdownType === 'products') {
-                      setShowProductsDropdown(true);
-                    } else if (link.dropdownType === 'blog') {
-                      setShowBlogDropdown(true);
-                    }
-                  }
-                }}
-                onMouseLeave={() => {
-                  setHovered(null);
-                  if (link.hasDropdown) {
-                    if (link.dropdownType === 'products') {
-                      setShowProductsDropdown(false);
-                    } else if (link.dropdownType === 'blog') {
-                      setShowBlogDropdown(false);
-                    }
-                  }
-                }}
+                onMouseEnter={() => setHovered(link.href)}
+                onMouseLeave={() => setHovered(null)}
               >
-                {/* Bigger white pill - centered vertically */}
+                {/* Animated pill background */}
                 {isTarget && (
                   <motion.div
                     layoutId="nav-pill"
@@ -205,183 +135,30 @@ const Header = () => {
 
                 <Link
                   href={link.href}
-                  className={`relative z-10 rounded-full px-5 py-2 flex items-center gap-1 ${
-                    isTarget ? 'text-black' : 'text-white'
-                  }`}
+                  className={`relative z-10 rounded-full px-5 py-2 block transition-colors ${isTarget ? 'text-black' : 'text-white'
+                    }`}
                 >
                   {link.name}
-                  {link.hasDropdown && (
-                    <ChevronDown
-                      size={16}
-                      className={`transition-transform duration-200 ${
-                        (link.dropdownType === 'products' && showProductsDropdown) ||
-                        (link.dropdownType === 'blog' && showBlogDropdown)
-                          ? 'rotate-180'
-                          : ''
-                      }`}
-                    />
-                  )}
                 </Link>
-
-                {/* Products Dropdown */}
-                {link.hasDropdown && link.dropdownType === 'products' && (
-                  <AnimatePresence>
-                    {showProductsDropdown && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-96 bg-white rounded-xl shadow-xl border border-gray-200 p-6 z-50"
-                        onMouseEnter={() => setShowProductsDropdown(true)}
-                        onMouseLeave={() => setShowProductsDropdown(false)}
-                      >
-                        <div className="space-y-4">
-                          {/* Featured/Main Product - Bigger */}
-                          <Link
-                            href={productCategories[0].href}
-                            className="group block p-6 rounded-lg hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100"
-                          >
-                            <div className="flex items-center space-x-4">
-                              <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                                <Image
-                                  src={productCategories[0].image}
-                                  alt={productCategories[0].name}
-                                  width={40}
-                                  height={40}
-                                  className="opacity-60"
-                                />
-                              </div>
-                              <div className="flex-1">
-                                <h3 className="font-semibold text-gray-900 text-lg">
-                                  {productCategories[0].name}
-                                </h3>
-                                <p className="text-sm text-gray-500 mt-1">
-                                  {productCategories[0].description}
-                                </p>
-                              </div>
-                            </div>
-                          </Link>
-
-                          {/* Secondary Products - Smaller, side by side */}
-                          <div className="grid grid-cols-2 gap-3">
-                            {productCategories.slice(1, 3).map((category) => (
-                              <Link
-                                key={category.name}
-                                href={category.href}
-                                className="group p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                              >
-                                <div className="flex flex-col items-center text-center space-y-2">
-                                  <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                                    <Image
-                                      src={category.image}
-                                      alt={category.name}
-                                      width={24}
-                                      height={24}
-                                      className="opacity-60"
-                                    />
-                                  </div>
-                                  <div>
-                                    <h3 className="font-semibold text-gray-900 text-xs">
-                                      {category.name}
-                                    </h3>
-                                    <p className="text-xs text-gray-500 mt-1">
-                                      {category.description}
-                                    </p>
-                                  </div>
-                                </div>
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                )}
-
-                {/* Blog Dropdown */}
-                {link.hasDropdown && link.dropdownType === 'blog' && (
-                  <AnimatePresence>
-                    {showBlogDropdown && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-96 bg-white rounded-xl shadow-xl border border-gray-200 p-6 z-50"
-                        onMouseEnter={() => setShowBlogDropdown(true)}
-                        onMouseLeave={() => setShowBlogDropdown(false)}
-                      >
-                        <div className="space-y-4">
-                          {/* Featured/Main Blog - Bigger */}
-                          <Link
-                            href={blogCategories[0].href}
-                            className="group block p-6 rounded-lg hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100"
-                          >
-                            <div className="flex items-center space-x-4">
-                              <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                                <Image
-                                  src={blogCategories[0].image}
-                                  alt={blogCategories[0].name}
-                                  width={40}
-                                  height={40}
-                                  className="opacity-60"
-                                />
-                              </div>
-                              <div className="flex-1">
-                                <h3 className="font-semibold text-gray-900 text-lg">
-                                  {blogCategories[0].name}
-                                </h3>
-                                <p className="text-sm text-gray-500 mt-1">
-                                  {blogCategories[0].description}
-                                </p>
-                              </div>
-                            </div>
-                          </Link>
-
-                          {/* Secondary Blog Categories - Smaller, side by side */}
-                          <div className="grid grid-cols-2 gap-3">
-                            {blogCategories.slice(1, 3).map((category) => (
-                              <Link
-                                key={category.name}
-                                href={category.href}
-                                className="group p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                              >
-                                <div className="flex flex-col items-center text-center space-y-2">
-                                  <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                                    <Image
-                                      src={category.image}
-                                      alt={category.name}
-                                      width={24}
-                                      height={24}
-                                      className="opacity-60"
-                                    />
-                                  </div>
-                                  <div>
-                                    <h3 className="font-semibold text-gray-900 text-xs">
-                                      {category.name}
-                                    </h3>
-                                    <p className="text-xs text-gray-500 mt-1">
-                                      {category.description}
-                                    </p>
-                                  </div>
-                                </div>
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                )}
-              </h3>
+              </li>
             );
           })}
         </ul>
-      </div>
+      </nav>
+
+      {/* Mobile Navigation */}
+      <nav className="lg:hidden">
+        <button className={cn("p-2 rounded-xl transition-all duration-300 hover:bg-white/20", {
+          "bg-black/50": scrolled,
+        })}>
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </nav>
 
       {/* Icons */}
-      <div className={cn("flex items-center bg-gray-300/50 backdrop-blur-xl rounded-full p-2 shadow-2xl border border-white/20",{
+      <div className={cn("flex items-center bg-gray-300/50 backdrop-blur-xl rounded-full p-2 shadow-2xl border border-white/20", {
         "bg-black/50": scrolled,
       })}>
         <div className="flex items-center space-x-1">

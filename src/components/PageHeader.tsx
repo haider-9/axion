@@ -34,10 +34,10 @@ const PageHeader = ({ title, titleHighlight, subtitle, breadcrumbs }: PageHeader
     })();
 
   return (
-    <div className="py-6 max-w-[85rem] mx-auto">
-      <div >
+    <div className="w-full bg-white">
+      <div className="max-w-[85rem] mx-auto px-4 sm:px-6 py-12">
         {/* Breadcrumbs */}
-        <div className="text-md font-bold text-[var(--color-logo)] mb-6">
+        <div className="text-md font-bold text-[var(--color-logo)] mb-8">
           {defaultBreadcrumbs.map((crumb, index) => (
             <span key={index}>
               {crumb.href ? (
@@ -57,16 +57,20 @@ const PageHeader = ({ title, titleHighlight, subtitle, breadcrumbs }: PageHeader
 
         {/* Page Title */}
         <div className="text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-[var(--color-black)] mb-4">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
             {titleHighlight ? (
               <>
-                {title} <span className="text-[var(--color-primary-accent)]">{titleHighlight}</span>
+                {title} <span className="text-blue-600">{titleHighlight}</span>
               </>
             ) : (
               title
             )}
           </h1>
-          {subtitle && <p className="text-xl text-[var(--color-secondary-text)]">{subtitle}</p>}
+          {subtitle && (
+            <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              {subtitle}
+            </p>
+          )}
         </div>
       </div>
     </div>

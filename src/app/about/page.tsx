@@ -78,13 +78,13 @@ const teamMembers = [
 
 export default function AboutPage() {
   return (
-    <div className="max-w-[85rem] mx-auto px-4 sm:px-6">
-      {/* About Section */}
+    <div className="min-h-screen bg-white">
       <PageHeader
         title="About"
         titleHighlight="Axion"
         subtitle="A team of experts crafting lighting solutions that elevate your experience"
       />
+      <div className="max-w-[85rem] mx-auto px-4 sm:px-6">
       <section className="py-12 sm:py-20">
         <div className=" grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {/* Story & Text */}
@@ -247,6 +247,7 @@ export default function AboutPage() {
           </Link>
         </div>
       </section>
+      </div>
     </div>
   );
 }

@@ -1,8 +1,10 @@
 'use client';
+
 import { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
-import Header from './Header';
+
 import Footer from './Footer';
+import Header from './Header';
 
 interface LayoutProps {
   children: ReactNode;

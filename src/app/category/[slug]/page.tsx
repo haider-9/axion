@@ -74,7 +74,7 @@ const CategoryPage = () => {
   }, [slug]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 10;
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = products.slice(startIndex, startIndex + itemsPerPage);

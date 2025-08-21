@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
-import { Poppins, Inter } from 'next/font/google';
+import { Inter, Poppins } from 'next/font/google';
+
+import { FloatingIcon, Layout } from '@/components';
+
 import './globals.css';
-import Layout from '@/components/Layout';
-import FloatingIcon from '@/components/FloatingIcon';
 const poppins = Poppins({
   variable: '--font-poppins',
   subsets: ['latin'],

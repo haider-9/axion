@@ -88,16 +88,16 @@ const ProjectsPage: React.FC = () => {
       : projects.filter((p) => p.category === activeFilter || p.style === activeFilter);
 
   return (
-    <div className="max-w-[85rem] my-10 mx-auto">
-      {/* PageHeader for consistent header */}
+    <div className="min-h-screen bg-white">
       <PageHeader
         title="Our"
         titleHighlight="Projects"
         subtitle="Showcasing our finest lighting installations and creative solutions."
       />
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-10">
+      <div className="max-w-[85rem] mx-auto px-4 py-8">
+        {/* Filters */}
+        <div className="flex flex-wrap gap-3 mb-10">
         {['All', ...categories.slice(1), ...styles].map((cat) => (
           <Button
             key={cat}
@@ -149,6 +149,7 @@ const ProjectsPage: React.FC = () => {
             </div>
           </div>
         ))}
+        </div>
       </div>
     </div>
   );

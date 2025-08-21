@@ -5,10 +5,10 @@ import PageHeader from '@/components/PageHeader';
 import { ArrowRight } from 'lucide-react';
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
-  searchParams: { [key: string]: string | string[] | undefined };
+  }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 // Dummy blog post data
@@ -77,8 +77,9 @@ const blogPosts = [
   },
 ];
 
-export default function BlogPost({ params }: PageProps) {
-  const post = blogPosts.find((post) => post.slug === params.slug);
+export default async function BlogPost({ params }: PageProps) {
+  const { slug } = await params;
+  const post = blogPosts.find((post) => post.slug === slug);
 
   if (!post) {
     return <div>Post not found</div>;
