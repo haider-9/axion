@@ -33,24 +33,24 @@ const blogPosts = [
 
 const BlogSection = () => {
   return (
-    <section className="py-20">
+    <section className="py-12 sm:py-16 lg:py-20">
       <div className="max-w-[85rem] mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-[var(--color-main-text)] mb-4">
+        <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+          <h2 className="text-2xl sm:text-3xl font-bold text-[var(--color-main-text)] mb-2 sm:mb-4">
             From our <span className="text-[var(--color-primary-accent)]">Blog</span>
           </h2>
-          <p className="text-md text-[var(--color-secondary-text)]">
+          <p className="text-sm sm:text-base text-[var(--color-secondary-text)] px-4">
             Insights, tips, and inspiration for lighting up your world.
           </p>
         </div>
 
         {/* Blog Posts Grid */}
-        <div className="grid md:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12">
           {blogPosts.map((post) => (
-            <article key={post.id} className="bg-white rounded-xl  overflow-hidden">
+            <article key={post.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
               {/* Blog Post Image */}
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-40 sm:h-44 lg:h-48 overflow-hidden">
                 <Image
                   src={post.image}
                   alt={post.title}
@@ -60,19 +60,19 @@ const BlogSection = () => {
               </div>
 
               {/* Blog Post Content */}
-              <div className="p-6">
+              <div className="p-4 sm:p-5 lg:p-6">
                 {/* Category Tag */}
-                <div className="inline-block bg-[var(--color-logo)] text-white px-3 py-1 rounded text-xs font-semibold mb-4">
+                <div className="inline-block bg-[var(--color-logo)] text-white px-2 py-1 sm:px-3 sm:py-1 rounded text-xs font-semibold mb-3 sm:mb-4">
                   {post.category}
                 </div>
 
                 {/* Title */}
-                <h3 className="text-xl font-bold text-[var(--color-logo)] mb-4 leading-tight">
+                <h3 className="text-lg sm:text-xl font-bold text-[var(--color-logo)] mb-3 sm:mb-4 leading-tight">
                   {post.title}
                 </h3>
 
                 {/* Meta Information */}
-                <div className="text-sm text-[var(--color-secondary-text)] space-y-1">
+                <div className="text-xs sm:text-sm text-[var(--color-secondary-text)] space-y-1">
                   <p>{post.date}</p>
                   <p>{post.author}</p>
                 </div>
@@ -85,11 +85,11 @@ const BlogSection = () => {
         <div className="text-center">
         <Link
             href="#"
-            className="inline-flex items-center bg-[var(--color-logo)] text-white px-6 py-3 rounded-lg font-medium shadow-md transition-colors group"
+            className="inline-flex items-center bg-[var(--color-logo)] text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium shadow-md transition-colors group text-sm sm:text-base"
           >
-            Explore Our Story
+            Read More Articles
             <span className="ml-2 inline-block transform transition-transform duration-300 group-hover:translate-x-2">
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
             </span>
           </Link>
         </div>

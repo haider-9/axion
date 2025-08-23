@@ -10,6 +10,7 @@ import {
   Trash2,
   Plus,
   Minus,
+  Menu,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
@@ -28,6 +29,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 
 const Header = () => {
@@ -36,6 +44,7 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [hideOnScroll, setHideOnScroll] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Hide header when scrolling from top
   useEffect(() => {
@@ -92,85 +101,170 @@ const Header = () => {
   return (
     <header
       className={cn(
-        `fixed top-0 left-0 right-0 z-50 flex items-center justify-between py-4 px-2 sm:px-6 mx-auto bg-transparent transition-transform duration-300`,
-        [hideOnScroll ? '-translate-y-full' : 'translate-y-0'],
+        `fixed top-0 left-0 right-0 z-50 transition-all duration-300`,
+        [hideOnScroll ? '-translate-y-full' : 'translate-y-0']
       )}
     >
-      {/* Logo */}
-      <div className={cn("size-16 flex items-center transition-colors duration-300", {
-        "border rounded-xl bg-black/30": scrolled
-      })}>
-        <Image
-          src="/Logo.png"
-          alt="Axion Lighting Solutions Logo"
-          width={100}
-          height={50}
-          className="brightness-200"
-        />
-      </div>
+      <div className={cn(
+        "max-w-[85rem] mx-auto my-4 px-4 sm:px-6 py-4 flex items-center justify-between transition-all duration-300 rounded-full sm:backdrop-filter-none sm:shadow-none bg-black/20 sm:bg-black/0 backdrop-blur-sm shadow-lg",
+        {
+          "bg-black/40": scrolled
+        }
+      )}>
+        {/* Logo */}
+        <div className="size-10 sm:size-12 md:size-16 flex items-center justify-center">
+          <Image
+            src="/Logo.png"
+            alt="Axion Lighting Solutions Logo"
+            width={80}
+            height={40}
+            className="brightness-200 w-6 h-6 sm:w-8 sm:h-8 md:w-12 md:h-12"
+          />
+        </div>
 
-      {/* Desktop Navigation */}
-      <nav className={cn("relative hidden lg:block py-1 px-1 rounded-full shadow-lg backdrop-blur-md bg-gray-300/30", {
-        "bg-black/50": scrolled,
-      })}>
-        <ul className="flex items-center justify-between relative z-10">
-          {navLinks.map((link) => {
-            const isTarget = pillTarget === link.href;
-
-            return (
-              <li
-                key={link.name}
-                className="relative"
-                onMouseEnter={() => setHovered(link.href)}
-                onMouseLeave={() => setHovered(null)}
-              >
-                {/* Animated pill background */}
-                {isTarget && (
-                  <motion.div
-                    layoutId="nav-pill"
-                    className="absolute inset-y-0 left-0 right-0 bg-white rounded-full"
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  />
-                )}
-
-                <Link
-                  href={link.href}
-                  className={`relative z-10 rounded-full px-5 py-2 block transition-colors ${isTarget ? 'text-black' : 'text-white'
-                    }`}
-                >
-                  {link.name}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-
-      {/* Mobile Navigation */}
-      <nav className="lg:hidden">
-        <button className={cn("p-2 rounded-xl transition-all duration-300 hover:bg-white/20", {
+        {/* Desktop Navigation */}
+        <nav className={cn("relative hidden md:block py-1 px-1 rounded-full shadow-lg backdrop-blur-md bg-gray-300/30", {
           "bg-black/50": scrolled,
         })}>
-          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-      </nav>
+          <ul className="flex items-center justify-between relative z-10">
+            {navLinks.map((link) => {
+              const isTarget = pillTarget === link.href;
 
-      {/* Icons */}
-      <div className={cn("flex items-center bg-gray-300/50 backdrop-blur-xl rounded-full p-2 shadow-2xl border border-white/20", {
-        "bg-black/50": scrolled,
-      })}>
-        <div className="flex items-center space-x-1">
+              return (
+                <li
+                  key={link.name}
+                  className="relative"
+                  onMouseEnter={() => setHovered(link.href)}
+                  onMouseLeave={() => setHovered(null)}
+                >
+                  {/* Animated pill background */}
+                  {isTarget && (
+                    <motion.div
+                      layoutId="nav-pill"
+                      className="absolute inset-y-0 left-0 right-0 bg-white rounded-full"
+                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    />
+                  )}
+
+                  <Link
+                    href={link.href}
+                    className={`relative z-10 rounded-full px-5 py-2 block transition-colors ${isTarget ? 'text-black' : 'text-white'
+                      }`}
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        {/* Mobile Navigation */}
+        <nav className="md:hidden">
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <button className="p-2 sm:p-3 rounded-full transition-all duration-300 hover:bg-white/20">
+                <Menu className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </button>
+            </SheetTrigger>
+            <SheetContent
+              side="left"
+              className="w-72 sm:w-80 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-r border-slate-700/50 overflow-y-auto"
+            >
+              <SheetHeader className="border-b border-slate-700/50 pb-6 mb-6 sticky top-0 bg-gradient-to-b from-slate-900 to-slate-800 z-10">
+                <SheetTitle className="flex items-center gap-3 text-white text-lg font-semibold">
+                  <div className="p-2 bg-[var(--color-logo)]/20 rounded-full">
+                    <Image
+                      src="/Logo.png"
+                      alt="Axion Lighting Solutions Logo"
+                      width={32}
+                      height={32}
+                      className="brightness-200"
+                    />
+                  </div>
+                  Axion Lighting
+                </SheetTitle>
+              </SheetHeader>
+
+              {/* Mobile Navigation Links */}
+              <div className="space-y-3 px-2">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={cn(
+                      "block px-4 py-3 rounded-xl text-white/90 transition-all duration-200 hover:bg-[var(--color-logo)]/20 hover:text-white hover:translate-x-1",
+                      {
+                        "bg-[var(--color-logo)] text-white shadow-lg": pathname === link.href
+                      }
+                    )}
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </div>
+
+              {/* Mobile Actions */}
+              <div className="mt-8 pt-6 border-t border-slate-700/50 space-y-3 px-2">
+                <button
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/90 hover:bg-slate-700/50 hover:text-white transition-all duration-200 hover:translate-x-1"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <div className="p-1 bg-[var(--color-logo)]/20 rounded-lg">
+                    <Search size={18} />
+                  </div>
+                  Search Products
+                </button>
+
+                <Link
+                  href="/cart"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/90 hover:bg-slate-700/50 hover:text-white transition-all duration-200 hover:translate-x-1"
+                >
+                  <div className="p-1 bg-[var(--color-logo)]/20 rounded-lg relative">
+                    <Handbag size={18} />
+                    {cartItems.length > 0 && (
+                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                        {cartItems.length}
+                      </span>
+                    )}
+                  </div>
+                  Shopping Cart
+                </Link>
+
+                <Link
+                  href="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/90 hover:bg-slate-700/50 hover:text-white transition-all duration-200 hover:translate-x-1"
+                >
+                  <div className="p-1 bg-[var(--color-logo)]/20 rounded-lg">
+                    <UserRound size={18} />
+                  </div>
+                  My Profile
+                </Link>
+              </div>
+
+              {/* Footer */}
+              <div className="mt-8 pt-6 border-t border-slate-700/50 px-4">
+                <p className="text-slate-400 text-sm text-center">
+                  © 2024 Axion Lighting Solutions
+                </p>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </nav>
+
+        {/* Icons */}
+        <div className="hidden md:flex items-center space-x-1">
           {/* Search Dialog */}
           <Dialog>
             <DialogTrigger asChild>
-              <button className="group relative p-1 rounded-xl transition-all duration-300 hover:bg-white/20 hover:shadow-lg ">
+              <button className="group relative p-2 rounded-full transition-all duration-300 hover:bg-white/20">
                 <Search
                   size={20}
                   className="text-white/80 group-hover:text-[#2CA6A4] transition-colors duration-300"
                 />
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#2CA6A4]/0 to-[#E1B857]/0 group-hover:from-[#2CA6A4]/10 group-hover:to-[#E1B857]/10 transition-all duration-300"></div>
               </button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
@@ -255,17 +349,16 @@ const Header = () => {
           {/* Cart Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="group relative py-2 px-2 rounded-xl transition-all duration-300 hover:bg-white/20 hover:shadow-lg ">
+              <button className="group relative p-2 rounded-full transition-all duration-300 hover:bg-white/20">
                 <Handbag
                   size={20}
                   className="text-white/80 group-hover:text-[#E1B857] transition-colors duration-300"
                 />
                 {cartItems.length > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center rounded-full text-xs font-bold bg-white text-black ">
+                  <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center rounded-full text-xs font-bold bg-white text-black">
                     {cartItems.length}
                   </span>
                 )}
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#E1B857]/0 to-[#2CA6A4]/0 group-hover:from-[#E1B857]/10 group-hover:to-[#2CA6A4]/10 transition-all duration-300"></div>
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -350,13 +443,12 @@ const Header = () => {
           {/* Profile Icon */}
           <Link
             href="/profile"
-            className="group relative  rounded-xl transition-all duration-300 hover:bg-white/20 hover:shadow-lg p-2"
+            className="group relative p-2 rounded-full transition-all duration-300 hover:bg-white/20"
           >
             <UserRound
               size={20}
               className="text-white/80 group-hover:text-[#F5F3EB] transition-colors duration-300"
             />
-            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#F5F3EB]/0 to-[#2CA6A4]/0 group-hover:from-[#F5F3EB]/10 group-hover:to-[#2CA6A4]/10 transition-all duration-300"></div>
           </Link>
         </div>
       </div>

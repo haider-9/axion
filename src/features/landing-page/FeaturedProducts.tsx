@@ -44,23 +44,23 @@ const FeaturedProducts = () => {
   ];
 
   return (
-    <div className=" bg-[#050B1B] px-5 py-8">
-      <h2 className="text-3xl font-bold text-center mb-3">
+    <div className=" bg-[#050B1B] px-4 sm:px-5 py-6 sm:py-8">
+      <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2 sm:mb-3">
         {' '}
-        <span className="text-3xl text-white text-center">Featured</span> Products
+        <span className="text-2xl sm:text-3xl text-white text-center">Featured</span> Products
       </h2>
-      <p className="text-gray-600 text-center mb-8 max-w-2xl mx-auto">
+      <p className="text-sm sm:text-base text-gray-600 text-center mb-6 sm:mb-8 max-w-xl sm:max-w-2xl mx-auto px-4">
         Discover our best-selling lighting solutions, crafted for every space.
       </p>
 
-      <div className="grid grid-cols-1 max-w-[85rem] mx-auto sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+      <div className="grid grid-cols-1 max-w-[85rem] mx-auto sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10">
         {products.map((product, index) => (
           <div
             key={index}
             className="bg-[var(--color-primary-dark)] rounded-lg overflow-hidden group"
           >
             {/* Product Image */}
-            <div className="relative w-full h-64 ">
+            <div className="relative w-full h-48 sm:h-56 md:h-64">
               <Image
                 src={product.image}
                 alt={product.name}
@@ -70,14 +70,14 @@ const FeaturedProducts = () => {
             </div>
 
             {/* Product Content */}
-            <div className="p-5 flex flex-col items-center text-center">
-              <h3 className="text-xl font-semibold text-white">{product.name}</h3>
-              <p className="text-gray-100 my-3">{product.description}</p>
-              <div className="text-lg font-bold text-white my-4">{product.price}</div>
+            <div className="p-4 sm:p-5 flex flex-col items-center text-center">
+              <h3 className="text-lg sm:text-xl font-semibold text-white">{product.name}</h3>
+              <p className="text-sm sm:text-base text-gray-100 my-2 sm:my-3">{product.description}</p>
+              <div className="text-base sm:text-lg font-bold text-white my-3 sm:my-4">{product.price}</div>
 
               <Link
                 href="#"
-                className="border border-primary w-full text-primary px-4 py-2 rounded-lg transition-colors duration-300 hover:bg-primary hover:text-white"
+                className="border border-primary w-full text-primary px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition-colors duration-300 hover:bg-primary hover:text-white text-sm sm:text-base"
               >
                 View Product
               </Link>
@@ -88,11 +88,11 @@ const FeaturedProducts = () => {
       <div className="flex justify-center">
         <Link
           href="#"
-          className="inline-flex items-center bg-[var(--color-logo)] text-white px-6 py-3 rounded-lg font-medium shadow-md transition-colors group"
+          className="inline-flex items-center bg-[var(--color-logo)] text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium shadow-md transition-colors group text-sm sm:text-base"
         >
           Explore Our Story
           <span className="ml-2 inline-block transform transition-transform duration-300 group-hover:translate-x-2">
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
           </span>
         </Link>
       </div>
