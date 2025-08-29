@@ -11,6 +11,7 @@ import {
   Plus,
   Minus,
   Menu,
+  LogOut,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
@@ -38,6 +39,16 @@ import {
 } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 
+interface UserData {
+  id: string;
+  name: string;
+  email: string;
+  isAdmin: boolean;
+  avatar?: string;
+  address?: string;
+  createdAt: string;
+}
+
 const Header = () => {
   const pathname = usePathname();
   const [hovered, setHovered] = useState<string | null>(null);
@@ -45,6 +56,20 @@ const Header = () => {
   const [hideOnScroll, setHideOnScroll] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userData, setUserData] = useState<UserData | null>(null);
+
+  // Get user data from localStorage
+  useEffect(() => {
+    const storedUserData = localStorage.getItem('userData');
+    if (storedUserData) {
+      try {
+        const parsedUserData = JSON.parse(storedUserData);
+        setUserData(parsedUserData);
+      } catch (error) {
+        console.error('Error parsing user data from localStorage:', error);
+      }
+    }
+  }, []);
 
   // Hide header when scrolling from top
   useEffect(() => {
@@ -75,7 +100,6 @@ const Header = () => {
     { name: 'Blog', href: '/blog' },
     { name: 'Contact', href: '/contact' },
   ];
-
 
   const recentSearches = [
     'LED Strip Lights',
@@ -233,16 +257,45 @@ const Header = () => {
                   Shopping Cart
                 </Link>
 
-                <Link
-                  href="/profile"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/90 hover:bg-slate-700/50 hover:text-white transition-all duration-200 hover:translate-x-1"
-                >
-                  <div className="p-1 bg-[var(--color-logo)]/20 rounded-lg">
-                    <UserRound size={18} />
-                  </div>
-                  My Profile
-                </Link>
+                {userData ? (
+                  <>
+                    <Link
+                      href="/profile"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/90 hover:bg-slate-700/50 hover:text-white transition-all duration-200 hover:translate-x-1"
+                    >
+                      <div className="p-1 bg-[var(--color-logo)]/20 rounded-lg">
+                        <UserRound size={18} />
+                      </div>
+                      My Profile
+                    </Link>
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem('userData');
+                        setUserData(null);
+                        setMobileMenuOpen(false);
+                        window.location.href = '/';
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/90 hover:bg-slate-700/50 hover:text-white transition-all duration-200 hover:translate-x-1"
+                    >
+                      <div className="p-1 bg-[var(--color-logo)]/20 rounded-lg">
+                        <LogOut size={18} />
+                      </div>
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    href="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/90 hover:bg-slate-700/50 hover:text-white transition-all duration-200 hover:translate-x-1"
+                  >
+                    <div className="p-1 bg-[var(--color-logo)]/20 rounded-lg">
+                      <UserRound size={18} />
+                    </div>
+                    Sign In
+                  </Link>
+                )}
               </div>
 
               {/* Footer */}
@@ -441,18 +494,65 @@ const Header = () => {
           </DropdownMenu>
 
           {/* Profile Icon */}
-          <Link
-            href="/profile"
-            className="group relative p-2 rounded-full transition-all duration-300 hover:bg-white/20"
-          >
-            <UserRound
-              size={20}
-              className="text-white/80 group-hover:text-[#F5F3EB] transition-colors duration-300"
-            />
-          </Link>
+          <ProfileDropdown userData={userData} setUserData={setUserData} />
         </div>
       </div>
     </header>
+  );
+};
+
+// Profile Dropdown Component
+const ProfileDropdown = ({ userData, setUserData }: { userData: UserData | null; setUserData: (data: UserData | null) => void }) => {
+  if (!userData) {
+    return (
+      <Link href="/register">
+        <button className="group relative p-2 rounded-full transition-all duration-300 hover:bg-white/20">
+          <UserRound
+            size={20}
+            className="text-white/80 group-hover:text-[#F5F3EB] transition-colors duration-300"
+          />
+        </button>
+      </Link>
+    );
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="group relative p-2 rounded-full transition-all duration-300 hover:bg-white/20">
+          <UserRound
+            size={20}
+            className="text-white/80 group-hover:text-[#F5F3EB] transition-colors duration-300"
+          />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56 mt-2" align="end">
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">{userData.name}</p>
+            <p className="text-xs leading-none text-muted-foreground">{userData.email}</p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <Link href="/profile">
+          <DropdownMenuLabel className="cursor-pointer hover:bg-gray-100 rounded-sm px-2 py-1.5">
+            Profile
+          </DropdownMenuLabel>
+        </Link>
+        <DropdownMenuSeparator />
+        <button
+          onClick={() => {
+            localStorage.removeItem('userData');
+            setUserData(null);
+            window.location.href = '/';
+          }}
+          className="w-full text-left px-2 py-1.5 text-sm hover:bg-gray-100 rounded-sm cursor-pointer flex items-center gap-2"
+        >
+          <LogOut size={16} />
+          Logout
+        </button>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

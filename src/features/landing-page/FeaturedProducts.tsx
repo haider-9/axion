@@ -1,9 +1,14 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import AddButton from '@/components/AddButton';
+import { useActions } from '@/hooks/useActions';
 
 const FeaturedProducts = () => {
+  const { product } = useActions();
   const products = [
     {
       name: 'Outdoor Garden Lamp',
@@ -45,13 +50,27 @@ const FeaturedProducts = () => {
 
   return (
     <div className=" bg-[#050B1B] px-4 sm:px-5 py-6 sm:py-8">
-      <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2 sm:mb-3">
-        {' '}
-        <span className="text-2xl sm:text-3xl text-white text-center">Featured</span> Products
-      </h2>
-      <p className="text-sm sm:text-base text-gray-600 text-center mb-6 sm:mb-8 max-w-xl sm:max-w-2xl mx-auto px-4">
-        Discover our best-selling lighting solutions, crafted for every space.
-      </p>
+      <div className="flex flex-col sm:flex-row items-center justify-between mb-6 sm:mb-8 max-w-[85rem] mx-auto px-4">
+        <div className="text-center sm:text-left mb-4 sm:mb-0">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3">
+            <span className="text-2xl sm:text-3xl text-white">Featured</span> Products
+          </h2>
+          <p className="text-sm sm:text-base text-gray-600 max-w-xl sm:max-w-2xl">
+            Discover our best-selling lighting solutions, crafted for every space.
+          </p>
+        </div>
+        <AddButton 
+          type="product" 
+          onAdd={async (data) => {
+            const formData = new FormData();
+            Object.entries(data).forEach(([key, value]) => {
+              formData.append(key, value as string);
+            });
+            await product.create(formData);
+          }}
+          className="bg-[var(--color-logo)] hover:bg-[var(--color-logo)]/90 text-white"
+        />
+      </div>
 
       <div className="grid grid-cols-1 max-w-[85rem] mx-auto sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10">
         {products.map((product, index) => (

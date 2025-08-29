@@ -3,6 +3,8 @@
 import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import AddButton from '@/components/AddButton';
+import { useActions } from '@/hooks/useActions';
 
 const blogPosts = [
   {
@@ -32,17 +34,28 @@ const blogPosts = [
 ];
 
 const BlogSection = () => {
+  const { product } = useActions();
   return (
     <section className="py-12 sm:py-16 lg:py-20">
       <div className="max-w-[85rem] mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="text-center mb-8 sm:mb-12 lg:mb-16">
-          <h2 className="text-2xl sm:text-3xl font-bold text-[var(--color-main-text)] mb-2 sm:mb-4">
-            From our <span className="text-[var(--color-primary-accent)]">Blog</span>
-          </h2>
-          <p className="text-sm sm:text-base text-[var(--color-secondary-text)] px-4">
-            Insights, tips, and inspiration for lighting up your world.
-          </p>
+        <div className="flex flex-col sm:flex-row items-center justify-between mb-8 sm:mb-12 lg:mb-16">
+          <div className="text-center sm:text-left mb-4 sm:mb-0">
+            <h2 className="text-2xl sm:text-3xl font-bold text-[var(--color-main-text)] mb-2 sm:mb-4">
+              From our <span className="text-[var(--color-primary-accent)]">Blog</span>
+            </h2>
+            <p className="text-sm sm:text-base text-[var(--color-secondary-text)] px-4">
+              Insights, tips, and inspiration for lighting up your world.
+            </p>
+          </div>
+          <AddButton 
+            type="blog" 
+            onAdd={async (data) => {
+              // For blog posts, you might want to create a separate action
+              console.log('Adding blog post:', data);
+            }}
+            className="bg-[var(--color-logo)] hover:bg-[var(--color-logo)]/90 text-white"
+          />
         </div>
 
         {/* Blog Posts Grid */}

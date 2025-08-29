@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Poppins } from 'next/font/google';
 
 import { FloatingIcon, Layout } from '@/components';
+import { Providers } from './providers';
 
 import './globals.css';
 const poppins = Poppins({
@@ -61,9 +62,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable} ${inter.variable} ${inter.variable}`}>
-        <Layout>{children}</Layout>
-        <FloatingIcon />
+      <body className={`${inter.variable} ${poppins.variable} font-poppins`}>
+        <Providers>
+          <Layout>{children}</Layout>
+          <FloatingIcon />
+        </Providers>
       </body>
     </html>
   );
