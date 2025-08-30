@@ -35,8 +35,6 @@ import {
   Upload,
   Trash2
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
@@ -72,8 +70,8 @@ export default function AddButton({ type, onAdd, className }: AddButtonProps) {
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState<Record<string, unknown>>({});
-  const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
   // Only show for admins
   if (!user?.isAdmin) {
@@ -391,27 +389,41 @@ export default function AddButton({ type, onAdd, className }: AddButtonProps) {
 
     try {
       setUploading(true);
-      const uploadPromises = Array.from(files).map(file => {
+
+      const uploadPromises = Array.from(files).map(async (file) => {
         const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', 'your_upload_preset'); // Replace with your Cloudinary upload preset
-        
-        return fetch('https://api.cloudinary.com/v1_1/your_cloud_name/image/upload', {
-          method: 'POST',
-          body: formData,
-        })
-        .then(response => response.json())
-        .then(data => data.secure_url);
+        formData.append("file", file);
+        formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!);
+
+        const res = await fetch(
+          `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error?.message || "Cloudinary upload failed");
+        }
+
+        return data.secure_url as string;
       });
 
-      const uploadedUrls = await Promise.all(uploadPromises);
-      setPreviewImages(prev => [...prev, ...uploadedUrls]);
+      const urls = await Promise.all(uploadPromises);
+
+      // Update the uploaded images state and form data
+      setUploadedImages(prev => [...prev, ...urls]);
       setFormData(prev => ({
         ...prev,
-        images: [...(prev.images as string[] || []), ...uploadedUrls]
+        images: [...(prev.images as string[] || []), ...urls]
       }));
+
+      toast.success('Images uploaded successfully');
     } catch (error) {
-      console.error('Error uploading images:', error);
+      console.error("Upload error:", error);
       toast.error('Failed to upload images');
     } finally {
       setUploading(false);
@@ -419,9 +431,9 @@ export default function AddButton({ type, onAdd, className }: AddButtonProps) {
   };
 
   const removeImage = (index: number) => {
-    const newImages = [...previewImages];
+    const newImages = [...uploadedImages];
     newImages.splice(index, 1);
-    setPreviewImages(newImages);
+    setUploadedImages(newImages);
     setFormData(prev => ({
       ...prev,
       images: newImages
@@ -434,12 +446,12 @@ export default function AddButton({ type, onAdd, className }: AddButtonProps) {
       toast.warning('Please wait for images to finish uploading');
       return;
     }
-    
+
     setLoading(true);
     try {
       await onAdd(formData);
       setFormData({});
-      setPreviewImages([]);
+      setUploadedImages([]);
       setOpen(false);
       toast.success('Item added successfully');
     } catch (error) {
@@ -528,7 +540,7 @@ export default function AddButton({ type, onAdd, className }: AddButtonProps) {
               {label}
               {required && <span className="text-red-500 ml-1">*</span>}
             </Label>
-            <div 
+            <div
               className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-accent/50 transition-colors"
               onClick={() => fileInputRef.current?.click()}
             >
@@ -551,27 +563,29 @@ export default function AddButton({ type, onAdd, className }: AddButtonProps) {
                 </p>
               </div>
             </div>
-            {previewImages.length > 0 && (
-              <div className="grid grid-cols-3 gap-2 mt-4">
-                {previewImages.map((src, index) => (
-                  <div key={index} className="relative group">
-                    <img
-                      src={src}
-                      alt={`Preview ${index + 1}`}
-                      className="w-full h-24 object-cover rounded-md"
-                    />
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeImage(index);
-                      }}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
+
+            {/* Show uploaded images preview */}
+            {uploadedImages.length > 0 && (
+              <div className="mt-4">
+                <p className="text-sm font-medium mb-2">Uploaded Images:</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {uploadedImages.map((url, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={url}
+                        alt={`Uploaded ${index + 1}`}
+                        className="w-full h-24 object-cover rounded-md"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -641,13 +655,18 @@ export default function AddButton({ type, onAdd, className }: AddButtonProps) {
               </Button>
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={loading || uploading}
                 className="flex-1 sm:flex-none gap-2"
               >
                 {loading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Adding...
+                  </>
+                ) : uploading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Uploading...
                   </>
                 ) : (
                   <>
