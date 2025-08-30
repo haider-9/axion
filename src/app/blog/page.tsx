@@ -4,6 +4,7 @@ import PageHeader from '@/components/PageHeader';
 import Pagination from '@/components/Pagination';
 import Image from 'next/image';
 import React, { useState } from 'react';
+import { createBlog } from '@/app/actions/blog/actions';
 
 const blogPosts = [
   {
@@ -100,14 +101,8 @@ export default function BlogPage() {
       {/* Blog Content */}
       <section className="py-20">
         <div className="max-w-[85rem] mx-auto px-4 sm:px-6">
-          <div className='flex justify-end mb-4'>
-            <AddButton
-              type="blog"
-              onAdd={async (data) => {
-                // For blog posts, you might want to create a separate action
-                console.log('Adding blog post:', data);
-              }}
-            />{' '}
+          <div className="flex justify-end mb-4">
+            <AddButton type="blog" action={createBlog} />
           </div>
           {/* Blog Posts Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-12">

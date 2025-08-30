@@ -1,29 +1,47 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
+import dbConnect from '@/lib/db';
+import Product from '@/models/Products';
+import Category from '@/models/Category';
 
 export async function GET() {
   try {
-    const client = await clientPromise;
-    const db = client.db();
-    
-    // Test the connection by listing all collections
-    const collections = await db.listCollections().toArray();
-    
-    return NextResponse.json({ 
-      status: 'success', 
-      collections: collections.map((c: { name: string }) => c.name),
-      dbStats: await db.stats()
-    });
-  } catch (error: unknown) {
-    console.error('MongoDB connection error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json(
-      { 
-        status: 'error', 
-        message: 'Failed to connect to MongoDB', 
-        error: errorMessage 
+    await dbConnect();
+
+    const [products, categories, featuredProducts] = await Promise.all([
+      Product.find({}),
+      Category.find({}),
+      Product.find({ featured: true }),
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        totalProducts: products.length,
+        totalCategories: categories.length,
+        featuredProducts: featuredProducts.length,
+        products: products.map((p) => ({
+          id: p._id,
+          name: p.name,
+          slug: p.slug,
+          price: p.price,
+          featured: p.featured,
+          category: p.category,
+        })),
+        categories: categories.map((c) => ({
+          id: c._id,
+          name: c.name,
+          slug: c.slug,
+        })),
+        featured: featuredProducts.map((p) => ({
+          id: p._id,
+          name: p.name,
+          slug: p.slug,
+          price: p.price,
+        })),
       },
-      { status: 500 }
-    );
+    });
+  } catch (error) {
+    console.error('Test API error:', error);
+    return NextResponse.json({ success: false, error: 'Failed to test database' }, { status: 500 });
   }
 }

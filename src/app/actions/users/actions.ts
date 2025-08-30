@@ -1,7 +1,7 @@
 'use server';
 
 import dbConnect from '@/lib/db';
-import {User} from '@/models/User';
+import { User } from '@/models/User';
 import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
 
@@ -15,7 +15,7 @@ export async function createUser(formData: FormData) {
       password: hashedPassword,
       isAdmin: formData.get('isAdmin') === 'on',
     });
-    return { success: true, data: user };
+    return { success: true, data: user.toObject() };
   } catch (error) {
     return { success: false, error: 'Failed to create user' };
   }
@@ -32,7 +32,7 @@ export async function authenticateUser(email: string, password: string) {
     if (!isMatch) {
       return { success: false, error: 'Invalid credentials' };
     }
-    return { success: true, data: user };
+    return { success: true, data: user.toObject() };
   } catch (error) {
     return { success: false, error: 'Authentication failed' };
   }

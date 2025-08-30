@@ -5,6 +5,8 @@ import PageHeader from '@/components/PageHeader';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import AddButton from '@/components/AddButton';
+import { createProject } from '@/app/actions/project/actions';
 
 const projects = [
   {
@@ -96,60 +98,92 @@ const ProjectsPage: React.FC = () => {
       />
 
       <div className="max-w-[85rem] mx-auto px-4 py-8">
-        {/* Filters */}
-        <div className="flex flex-wrap gap-3 mb-10">
-        {['All', ...categories.slice(1), ...styles].map((cat) => (
-          <Button
-            key={cat}
-            variant={activeFilter === cat ? 'default' : 'outline'}
-            onClick={() => setActiveFilter(cat)}
-            className={cn(
-              `rounded-lg text-black hover:bg-[var(--color-logo)] px-5 py-2 text-sm font-medium`,
-              activeFilter === cat ? 'bg-[var(--color-logo)] text-white' : 'bg-white text-black',
-            )}
-          >
-            {cat}
-          </Button>
-        ))}
-       
-      </div>
+        {/* Filters and Add Button */}
+        <div className="flex flex-wrap justify-between items-center gap-4 mb-10">
+          <div className="flex flex-wrap gap-3">
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant={activeFilter === category ? 'default' : 'outline'}
+                onClick={() => setActiveFilter(category)}
+                className={cn(
+                  'rounded-full',
+                  activeFilter === category
+                    ? 'bg-[var(--color-logo)] text-white hover:bg-[var(--color-logo)]/90'
+                    : 'border-[var(--color-logo)] text-[var(--color-logo)] hover:bg-[var(--color-logo)] hover:text-white',
+                )}
+              >
+                {category}
+              </Button>
+            ))}
+          </div>
+          <AddButton
+            type="project"
+            action={createProject}
+            className="bg-[var(--color-logo)] hover:bg-[var(--color-logo)]/90 text-white"
+          />
+        </div>
 
-      {/* Projects Grid */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {filteredProjects.map((project) => (
-          <div
-            key={project.id}
-            className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col"
-          >
-            <Image
-              src={project.image}
-              alt={project.title}
-              width={600}
-              height={400}
-              className="w-full h-64 object-cover"
-            />
-            <div className="p-5 flex-1 flex flex-col justify-between">
-              <div>
-                <p className="text-sm text-gray-500 mb-1">
-                  {project.category} - {project.style}
-                </p>
-                <h3 className="text-lg font-semibold mb-2">{project.title}</h3>
-                <p className="text-sm text-gray-600">
-                  {project.location} - {project.date}
-                </p>
+        {/* Projects Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredProjects.map((project) => (
+            <div
+              key={project.id}
+              className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden group"
+            >
+              {/* Project Image */}
+              <div className="relative h-48 overflow-hidden">
+                <Image
+                  src={project.image}
+                  alt={project.title}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300" />
               </div>
-              <div className="mt-4">
-                <Button
-                  asChild
-                  variant="outline"
-                  className="w-full bg-[var(--color-logo)] text-white"
+
+              {/* Project Content */}
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="inline-block bg-[var(--color-logo)] text-white px-3 py-1 rounded-full text-xs font-semibold">
+                    {project.category}
+                  </span>
+                  <span className="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-semibold">
+                    {project.style}
+                  </span>
+                </div>
+
+                <h3 className="text-xl font-bold text-[var(--color-logo)] mb-3 leading-tight">
+                  {project.title}
+                </h3>
+
+                <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
+                  <span>{project.location}</span>
+                  <span>{project.date}</span>
+                </div>
+
+                <Link
+                  href={`/projects/${project.slug}`}
+                  className="inline-flex items-center text-[var(--color-logo)] font-medium hover:underline transition-colors"
                 >
-                  <Link href={`/projects/${project.slug}`}>View Project</Link>
-                </Button>
+                  View Project Details
+                  <svg
+                    className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </Link>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
         </div>
       </div>
     </div>

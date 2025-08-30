@@ -16,6 +16,7 @@ import {
   SelectItem,
 } from '@/components/ui/select';
 import AddButton from '@/components/AddButton';
+import { createProduct } from '@/app/actions';
 
 // Dummy product data
 const products = [
@@ -101,43 +102,35 @@ const CategoryPage = () => {
         {/* Filters */}
         <div className="flex flex-wrap justify-between items-center gap-6 mb-12 bg-gray-50 p-5 rounded-xl shadow-sm">
           {/* Category Select */}
-          <div className='flex items-center gap-4'>
+          <div className="flex items-center gap-4">
+            <Select>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="All Indoor Lights" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Indoor Lights</SelectItem>
+                <SelectItem value="wall">Wall Lamps</SelectItem>
+                <SelectItem value="chandelier">Chandeliers</SelectItem>
+              </SelectContent>
+            </Select>
 
-         
-          <Select>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="All Indoor Lights" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Indoor Lights</SelectItem>
-              <SelectItem value="wall">Wall Lamps</SelectItem>
-              <SelectItem value="chandelier">Chandeliers</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {/* Price Select */}
-          <Select>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Price Range" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="low">Rs. 3,000 - Rs. 8,000</SelectItem>
-              <SelectItem value="mid">Rs. 8,000 - Rs. 20,000</SelectItem>
-              <SelectItem value="high">Above Rs. 20,000</SelectItem>
-            </SelectContent>
-          </Select>
+            {/* Price Select */}
+            <Select>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Price Range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="low">Rs. 3,000 - Rs. 8,000</SelectItem>
+                <SelectItem value="mid">Rs. 8,000 - Rs. 20,000</SelectItem>
+                <SelectItem value="high">Above Rs. 20,000</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <div className='space-x-4'>
+          <div className="space-x-4">
             <Button variant="ghost" className="ml-auto text-gray-500 hover:text-black">
               Clear Filters
             </Button>
-            <AddButton
-              type="product"
-              onAdd={async (data) => {
-                // For blog posts, you might want to create a separate action
-                console.log('Adding blog post:', data);
-              }}
-            />
+            <AddButton type="product" action={createProduct} />
           </div>
         </div>
 

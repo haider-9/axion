@@ -6,6 +6,7 @@ import Link from 'next/link';
 import AddButton from '@/components/AddButton';
 import { useActions } from '@/hooks/useActions';
 import { toast } from 'sonner';
+import { createBlog } from '@/app/actions/blog/actions';
 
 const blogPosts = [
   {
@@ -14,7 +15,7 @@ const blogPosts = [
     category: 'INTERIOR DESIGN',
     title: 'Choosing the Perfect Warm Lighting for Your Living Room',
     date: 'March 14, 2026',
-    author: 'By Michael Brown'
+    author: 'By Michael Brown',
   },
   {
     id: 2,
@@ -22,7 +23,7 @@ const blogPosts = [
     category: 'LIGHTING TIPS',
     title: '5 Ways to Brighten Your Home Without Raising Your Energy Bill',
     date: 'April 5, 2025',
-    author: 'By Sarah Johnson'
+    author: 'By Sarah Johnson',
   },
   {
     id: 3,
@@ -30,8 +31,8 @@ const blogPosts = [
     category: 'INSPIRATION',
     title: 'Transforming Your Backyard With our Solar Lights',
     date: 'June 29, 2025',
-    author: 'By Emily Harris'
-  }
+    author: 'By Emily Harris',
+  },
 ];
 
 const BlogSection = () => {
@@ -49,13 +50,9 @@ const BlogSection = () => {
               Insights, tips, and inspiration for lighting up your world.
             </p>
           </div>
-          <AddButton 
-            type="blog" 
-            onAdd={async (data) => {
-              // For blog posts, you might want to create a separate action
-              console.log('Adding blog post:', data);
-              
-            }}
+          <AddButton
+            type="blog"
+            action={createBlog}
             className="bg-[var(--color-logo)] hover:bg-[var(--color-logo)]/90 text-white"
           />
         </div>
@@ -63,7 +60,10 @@ const BlogSection = () => {
         {/* Blog Posts Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12">
           {blogPosts.map((post) => (
-            <article key={post.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
+            <article
+              key={post.id}
+              className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
+            >
               {/* Blog Post Image */}
               <div className="relative h-40 sm:h-44 lg:h-48 overflow-hidden">
                 <Image
@@ -98,7 +98,7 @@ const BlogSection = () => {
 
         {/* Call to Action */}
         <div className="text-center">
-        <Link
+          <Link
             href="#"
             className="inline-flex items-center bg-[var(--color-logo)] text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium shadow-md transition-colors group text-sm sm:text-base"
           >

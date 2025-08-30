@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import PageHeader from '@/components/PageHeader';
 import AddButton from '@/components/AddButton';
+import { createCategory } from '@/app/actions/categories/actions';
 
 const productCategories = [
   {
@@ -54,6 +55,7 @@ const ProductsPage = () => {
       {/* Product Categories */}
       <section>
         <div className="max-w-[85rem] mx-auto px-4 sm:px-6">
+          <AddButton type="category" action={createCategory} className="mb-6" />
           {productCategories.map((product) => (
             <div
               key={product.id}

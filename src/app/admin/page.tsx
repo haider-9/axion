@@ -20,6 +20,11 @@ import {
   UserCheck,
 } from 'lucide-react';
 import PageHeader from '@/components/PageHeader';
+import AddButton from '@/components/AddButton';
+import { createProduct } from '@/app/actions';
+import { createCategory } from '@/app/actions/categories/actions';
+import { createBlog } from '@/app/actions/blog/actions';
+import { createProject } from '@/app/actions/project/actions';
 
 export default function AdminDashboard() {
   // Support both next-auth and localStorage fallback
@@ -30,7 +35,9 @@ export default function AdminDashboard() {
   useEffect(() => {
     const stored = localStorage.getItem('userData');
     if (stored) {
-      try { setLocalUser(JSON.parse(stored)); } catch {}
+      try {
+        setLocalUser(JSON.parse(stored));
+      } catch {}
     }
   }, []);
 
@@ -61,9 +68,7 @@ export default function AdminDashboard() {
                   <UserCheck className="w-5 h-5" />
                   Admin Panel
                 </CardTitle>
-                <CardDescription>
-                  Welcome back, {session?.user?.name}
-                </CardDescription>
+                <CardDescription>Welcome back, {session?.user?.name}</CardDescription>
               </CardHeader>
               <CardContent>
                 <nav className="space-y-2">
@@ -142,7 +147,9 @@ export default function AdminDashboard() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">$0.00</div>
-                      <p className="text-xs text-muted-foreground">Let&apos;s add first - revenue</p>
+                      <p className="text-xs text-muted-foreground">
+                        Let&apos;s add first - revenue
+                      </p>
                     </CardContent>
                   </Card>
 
@@ -153,7 +160,7 @@ export default function AdminDashboard() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">0</div>
-                      <p className="text-xs text-muted-foreground">Let’s add first - orders</p>
+                      <p className="text-xs text-muted-foreground">Let's add first - orders</p>
                     </CardContent>
                   </Card>
 
@@ -164,7 +171,7 @@ export default function AdminDashboard() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">0</div>
-                      <p className="text-xs text-muted-foreground">Let’s add first - products</p>
+                      <p className="text-xs text-muted-foreground">Let's add first - products</p>
                     </CardContent>
                   </Card>
 
@@ -175,7 +182,7 @@ export default function AdminDashboard() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">0</div>
-                      <p className="text-xs text-muted-foreground">Let’s add first - users</p>
+                      <p className="text-xs text-muted-foreground">Let's add first - users</p>
                     </CardContent>
                   </Card>
                 </div>
@@ -184,24 +191,22 @@ export default function AdminDashboard() {
                   <Card>
                     <CardHeader>
                       <CardTitle>Recent Orders</CardTitle>
-                      <CardDescription>
-                        Latest orders from your customers
-                      </CardDescription>
+                      <CardDescription>Latest orders from your customers</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm text-muted-foreground">Let’s add first - recent orders</p>
+                      <p className="text-sm text-muted-foreground">
+                        Let's add first - recent orders
+                      </p>
                     </CardContent>
                   </Card>
 
                   <Card>
                     <CardHeader>
                       <CardTitle>Low Stock Products</CardTitle>
-                      <CardDescription>
-                        Products that need restocking
-                      </CardDescription>
+                      <CardDescription>Products that need restocking</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm text-muted-foreground">Let’s add first - low stock</p>
+                      <p className="text-sm text-muted-foreground">Let's add first - low stock</p>
                     </CardContent>
                   </Card>
                 </div>
@@ -212,9 +217,7 @@ export default function AdminDashboard() {
                 <Card>
                   <CardHeader>
                     <CardTitle>All Orders</CardTitle>
-                    <CardDescription>
-                      Manage and track all customer orders
-                    </CardDescription>
+                    <CardDescription>Manage and track all customer orders</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -238,18 +241,25 @@ export default function AdminDashboard() {
                 <Card>
                   <CardHeader>
                     <CardTitle>Product Management</CardTitle>
-                    <CardDescription>
-                      Add, edit, and manage your product catalog
-                    </CardDescription>
+                    <CardDescription>Add, edit, and manage your product catalog</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-medium">Product Catalog</h3>
-                        <Button>
-                          <Plus className="w-4 h-4 mr-2" />
-                          Add New Product
-                        </Button>
+                        <AddButton
+                          type="product"
+                          action={createProduct}
+                          className="bg-blue-600 hover:bg-blue-700"
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-medium">Categories</h3>
+                        <AddButton
+                          type="category"
+                          action={createCategory}
+                          className="bg-green-600 hover:bg-green-700"
+                        />
                       </div>
                       <p className="text-muted-foreground">
                         Manage your product inventory, categories, and pricing.
@@ -264,9 +274,7 @@ export default function AdminDashboard() {
                 <Card>
                   <CardHeader>
                     <CardTitle>User Management</CardTitle>
-                    <CardDescription>
-                      Manage customer accounts and admin users
-                    </CardDescription>
+                    <CardDescription>Manage customer accounts and admin users</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -290,28 +298,30 @@ export default function AdminDashboard() {
                 <Card>
                   <CardHeader>
                     <CardTitle>Quick Actions</CardTitle>
-                    <CardDescription>
-                      Common administrative tasks
-                    </CardDescription>
+                    <CardDescription>Common administrative tasks</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Button className="h-20 flex-col">
-                        <Plus className="w-6 h-6 mb-2" />
-                        Add Product
-                      </Button>
-                      <Button className="h-20 flex-col">
-                        <ShoppingCart className="w-6 h-6 mb-2" />
-                        Process Orders
-                      </Button>
-                      <Button className="h-20 flex-col">
-                        <Users className="w-6 h-6 mb-2" />
-                        Manage Users
-                      </Button>
-                      <Button className="h-20 flex-col">
-                        <BarChart3 className="w-6 h-6 mb-2" />
-                        View Analytics
-                      </Button>
+                      <AddButton
+                        type="product"
+                        action={createProduct}
+                        className="h-20 flex-col bg-blue-600 hover:bg-blue-700"
+                      />
+                      <AddButton
+                        type="category"
+                        action={createCategory}
+                        className="h-20 flex-col bg-green-600 hover:bg-green-700"
+                      />
+                      <AddButton
+                        type="blog"
+                        action={createBlog}
+                        className="h-20 flex-col bg-orange-600 hover:bg-orange-700"
+                      />
+                      <AddButton
+                        type="project"
+                        action={createProject}
+                        className="h-20 flex-col bg-purple-600 hover:bg-purple-700"
+                      />
                     </div>
                   </CardContent>
                 </Card>
@@ -322,9 +332,7 @@ export default function AdminDashboard() {
                 <Card>
                   <CardHeader>
                     <CardTitle>System Settings</CardTitle>
-                    <CardDescription>
-                      Configure your e-commerce platform
-                    </CardDescription>
+                    <CardDescription>Configure your e-commerce platform</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
