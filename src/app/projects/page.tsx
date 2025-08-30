@@ -111,6 +111,7 @@ const ProjectsPage: React.FC = () => {
             {cat}
           </Button>
         ))}
+       
       </div>
 
       {/* Projects Grid */}

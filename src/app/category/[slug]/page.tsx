@@ -15,6 +15,7 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select';
+import AddButton from '@/components/AddButton';
 
 // Dummy product data
 const products = [
@@ -98,8 +99,11 @@ const CategoryPage = () => {
 
       <div className="max-w-[85rem] mx-auto px-4 sm:px-6 py-10">
         {/* Filters */}
-        <div className="flex flex-wrap items-center gap-6 mb-12 bg-gray-50 p-5 rounded-xl shadow-sm">
+        <div className="flex flex-wrap justify-between items-center gap-6 mb-12 bg-gray-50 p-5 rounded-xl shadow-sm">
           {/* Category Select */}
+          <div className='flex items-center gap-4'>
+
+         
           <Select>
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="All Indoor Lights" />
@@ -122,10 +126,19 @@ const CategoryPage = () => {
               <SelectItem value="high">Above Rs. 20,000</SelectItem>
             </SelectContent>
           </Select>
-
-          <Button variant="ghost" className="ml-auto text-gray-500 hover:text-black">
-            Clear Filters
-          </Button>
+          </div>
+          <div className='space-x-4'>
+            <Button variant="ghost" className="ml-auto text-gray-500 hover:text-black">
+              Clear Filters
+            </Button>
+            <AddButton
+              type="product"
+              onAdd={async (data) => {
+                // For blog posts, you might want to create a separate action
+                console.log('Adding blog post:', data);
+              }}
+            />
+          </div>
         </div>
 
         {/* Product Grid */}

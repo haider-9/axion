@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import AddButton from '@/components/AddButton';
 import { useActions } from '@/hooks/useActions';
+import { toast } from 'sonner';
 
 const blogPosts = [
   {
@@ -53,6 +54,7 @@ const BlogSection = () => {
             onAdd={async (data) => {
               // For blog posts, you might want to create a separate action
               console.log('Adding blog post:', data);
+              
             }}
             className="bg-[var(--color-logo)] hover:bg-[var(--color-logo)]/90 text-white"
           />

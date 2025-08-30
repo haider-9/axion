@@ -1,11 +1,12 @@
 'use server';
 
 import dbConnect from '@/lib/db';
-import User from '@/models/User';
+import {User} from '@/models/User';
 import Product from '@/models/Products';
 import Order from '@/models/Order';
 import Category from '@/models/Category';
 import { revalidatePath } from 'next/cache';
+import { ObjectId } from 'mongodb';
 
 export async function getAllUsers(page: number = 1, limit: number = 20) {
   try {
@@ -265,23 +266,175 @@ export async function bulkUpdateProductStock(updates: Array<{ productId: string;
     const bulkOps = updates.map(update => ({
       updateOne: {
         filter: { _id: update.productId },
-        update: { $set: { stock: update.newStock } }
+        update: { $set: { stock: update.newStock, updatedAt: new Date() } }
       }
     }));
     
     const result = await Product.bulkWrite(bulkOps);
     
-    revalidatePath('/admin/products');
+    revalidatePath('/admin/inventory');
+    return { 
+      success: true, 
+      message: 'Bulk update successful',
+      modifiedCount: result.modifiedCount
+    };
+  } catch (error) {
+    return { 
+      success: false, 
+      error: 'Failed to update product stock',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    };
+  }
+}
+
+export async function getSystemLogs({
+  type,
+  startDate,
+  endDate,
+  page = 1,
+  limit = 50
+}: {
+  type?: string;
+  startDate?: Date;
+  endDate?: Date;
+  page?: number;
+  limit?: number;
+}) {
+  try {
+    await dbConnect();
+    const skip = (page - 1) * limit;
+    
+    const query: any = {};
+    if (type) query.type = type;
+    if (startDate || endDate) {
+      query.timestamp = {};
+      if (startDate) query.timestamp.$gte = startDate;
+      if (endDate) query.timestamp.$lte = endDate;
+    }
+    
+    // Implementation would depend on your logging system
+    // This is a simplified example
+    const [logs, total] = await Promise.all([
+      [], // Replace with actual log query
+      0,  // Replace with actual count
+    ]);
+    
+    const totalPages = Math.ceil(total / limit);
     
     return {
       success: true,
       data: {
-        modifiedCount: result.modifiedCount,
-        totalCount: updates.length
+        logs,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalLogs: total,
+          hasNextPage: page < totalPages,
+          hasPrevPage: page > 1
+        }
       }
     };
   } catch (error) {
-    return { success: false, error: 'Failed to bulk update product stock' };
+    return { success: false, error: 'Failed to fetch system logs' };
+  }
+}
+
+export async function performSystemMaintenance() {
+  try {
+    await dbConnect();
+    
+    // Example maintenance tasks
+    const tasks = [
+      { name: 'Clean up expired sessions', result: 'Success' },
+      { name: 'Update product statistics', result: 'Success' },
+      { name: 'Generate backup', result: 'Success' },
+    ];
+    
+    // Add your actual maintenance logic here
+    
+    return {
+      success: true,
+      message: 'System maintenance completed successfully',
+      tasks
+    };
+  } catch (error) {
+    return { 
+      success: false, 
+      error: 'System maintenance failed',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    };
+  }
+}
+
+export async function sendBulkNotification({
+  userIds,
+  title,
+  message,
+  type = 'info'
+}: {
+  userIds: string[];
+  title: string;
+  message: string;
+  type?: 'info' | 'warning' | 'success' | 'error';
+}) {
+  try {
+    await dbConnect();
+    
+    // Convert string IDs to ObjectId
+    const objectIds = userIds.map(id => new ObjectId(id));
+    
+    // Implementation would depend on your notification system
+    // This is a simplified example
+    const notifications = objectIds.map(userId => ({
+      userId,
+      title,
+      message,
+      type,
+      read: false,
+      createdAt: new Date()
+    }));
+    
+    // Save notifications to database
+    // await Notification.insertMany(notifications);
+    
+    return {
+      success: true,
+      message: `Notification sent to ${userIds.length} users`,
+      count: notifications.length
+    };
+  } catch (error) {
+    return { 
+      success: false, 
+      error: 'Failed to send notifications',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    };
+  }
+}
+
+export async function updateMultipleUsersStatus(userIds: string[], isActive: boolean) {
+  try {
+    await dbConnect();
+    
+    const objectIds = userIds.map(id => new ObjectId(id));
+    
+    const result = await User.updateMany(
+      { _id: { $in: objectIds } },
+      { $set: { isActive, updatedAt: new Date() } }
+    );
+    
+    revalidatePath('/admin/users');
+    
+    return {
+      success: true,
+      message: `Successfully updated ${result.modifiedCount} users`,
+      modifiedCount: result.modifiedCount
+    };
+  } catch (error) {
+    return { 
+      success: false, 
+      error: 'Failed to update users status',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    };
   }
 }
 

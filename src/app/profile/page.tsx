@@ -1,64 +1,57 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { redirect } from 'next/navigation';
+import { redirect, usePathname } from 'next/navigation';
 import Image from 'next/image';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import PageHeader from '@/components/PageHeader';
 import Link from 'next/link';
-import AddButton from '@/components/AddButton';
 import { useActions } from '@/hooks/useActions';
-import {
-  Edit3,
-  Users,
-  Package,
-  ShoppingCart,
-  Settings,
-  Plus,
-  UserCheck,
-  LogOut,
-  ExternalLink,
-} from 'lucide-react';
+import { Edit3, Plus, ShoppingBag, Heart, Settings, MapPin, Mail, Phone, LogOut, ExternalLink } from 'lucide-react';
+import ProfileSidebar from '@/components/ProfileSidebar';
 
-// Mock order history
-const orderHistory = [
-  {
-    id: '12234',
-    name: 'Concorde Lamp',
-    status: 'Delivered',
-    image: '/collection-1.jpg',
-  },
-  {
-    id: '12579',
-    name: 'Golden Glow Lamp',
-    status: 'In Progress',
-    image: '/collection-2.jpg',
-  },
-  {
-    id: '13032',
-    name: 'Strip Chandelier',
-    status: 'Shipped',
-    image: '/product-1.jpg',
-  },
-];
+// Dummy data - replace with actual data from your API
+const orderHistory: Array<{ id: string; name: string; status: string; image: string; date: string }> = [];
+const wishlistImages: string[] = [];
 
-// Mock wishlist
-const wishlistImages = [
-  '/product-1.jpg',
-  '/product-2.jpg',
-  '/collection-1.jpg',
-  '/collection-2.jpg',
-  '/about-image.jpg',
-];
+interface UserData {
+  name?: string;
+  email?: string;
+  avatar?: string;
+  address?: string;
+  phone?: string;
+  isAdmin?: boolean;
+}
+
+// Helper Components
+const ProfileCard = ({ title, children, className = '' }: { title: string; children: React.ReactNode; className?: string }) => (
+  <div className={`bg-white rounded-xl shadow-sm border border-gray-200 p-6 ${className}`}>
+    <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
+    {children}
+  </div>
+);
+
+const OrderItem = ({ id, name, status, image, date }: { id: string; name: string; status: string; image: string; date: string }) => (
+  <div className="flex items-center p-4 border-b border-gray-100 hover:bg-gray-50">
+    <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+      <Image src={image} alt={name} width={64} height={64} className="object-cover w-full h-full" />
+    </div>
+    <div className="ml-4 flex-1">
+      <h4 className="font-medium text-gray-900">{name}</h4>
+      <p className="text-sm text-gray-500">Order #{id}</p>
+      <p className="text-xs text-gray-400 mt-1">{date}</p>
+    </div>
+    <Badge variant={status === 'Delivered' ? 'default' : 'secondary'} className="ml-4">
+      {status}
+    </Badge>
+  </div>
+);
 
 export default function ProfilePage() {
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('profile');
-  const { product, user, category, admin } = useActions();
+  const pathname = usePathname();
+  const { product, user } = useActions();
 
   useEffect(() => {
     // Get user data from localStorage
@@ -67,7 +60,14 @@ export default function ProfilePage() {
     if (storedUserData) {
       try {
         const parsedUserData = JSON.parse(storedUserData);
-        setUserData(parsedUserData);
+        setUserData({
+          name: 'John Doe',
+          email: 'john@example.com',
+          address: '123 Main St, Anytown, USA',
+          phone: '+1 (555) 123-4567',
+          isAdmin: false,
+          ...parsedUserData
+        });
       } catch (error) {
         console.error('Error parsing user data from localStorage:', error);
         redirect('/login');
@@ -80,323 +80,266 @@ export default function ProfilePage() {
     setIsLoading(false);
   }, []);
 
+  const renderProfileContent = () => (
+    <div className="space-y-6">
+      {/* Personal Information */}
+      <ProfileCard title="Personal Information">
+        <div className="flex items-start space-x-6">
+          <div className="relative group">
+            <div className="w-24 h-24 rounded-full bg-gray-100 overflow-hidden">
+              <Image
+                src={userData?.avatar || '/about-image.jpg'}
+                alt={userData?.name || 'User'}
+                width={96}
+                height={96}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <button className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors">
+              <Edit3 className="w-4 h-4" />
+            </button>
+          </div>
+          
+          <div className="flex-1">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-900">{userData?.name || 'User'}</h2>
+              <Button variant="outline" size="sm" className="flex items-center">
+                <Edit3 className="w-4 h-4 mr-2" />
+                Edit Profile
+              </Button>
+            </div>
+            
+            <div className="mt-4 space-y-3">
+              <div className="flex items-center text-gray-600">
+                <Mail className="w-5 h-5 mr-2 text-gray-400" />
+                <span>{userData?.email || 'No email provided'}</span>
+              </div>
+              <div className="flex items-center text-gray-600">
+                <Phone className="w-5 h-5 mr-2 text-gray-400" />
+                <span>{userData?.phone || 'No phone number provided'}</span>
+              </div>
+              <div className="flex items-start text-gray-600">
+                <MapPin className="w-5 h-5 mr-2 text-gray-400 mt-0.5 flex-shrink-0" />
+                <span>{userData?.address || 'No address provided'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ProfileCard>
+
+      {/* Recent Orders */}
+      <ProfileCard title="Recent Orders">
+        {orderHistory.length > 0 ? (
+          <div className="divide-y divide-gray-100">
+            {orderHistory.slice(0, 3).map((order) => (
+              <OrderItem key={order.id} {...order} />
+            ))}
+            <div className="pt-4 text-center">
+              <Button variant="outline" asChild>
+                <Link href="/orders">View All Orders</Link>
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <ShoppingBag className="w-12 h-12 mx-auto text-gray-300" />
+            <h4 className="mt-4 text-gray-500">No orders yet</h4>
+            <Button className="mt-4" asChild>
+              <Link href="/">Start Shopping</Link>
+            </Button>
+          </div>
+        )}
+      </ProfileCard>
+    </div>
+  );
+
+  const renderOrdersContent = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">My Orders</h2>
+          <p className="text-gray-500">View and track your orders</p>
+        </div>
+        <Button variant="outline">
+          <ShoppingBag className="w-4 h-4 mr-2" />
+          Order History
+        </Button>
+      </div>
+
+      <ProfileCard title="Order History">
+        {orderHistory.length > 0 ? (
+          <div className="divide-y divide-gray-100">
+            {orderHistory.map((order) => (
+              <OrderItem key={order.id} {...order} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <ShoppingBag className="w-12 h-12 mx-auto text-gray-300" />
+            <h4 className="mt-4 text-gray-500">No orders yet</h4>
+            <p className="text-sm text-gray-400 mt-1">Your order history will appear here</p>
+            <Button className="mt-6" asChild>
+              <Link href="/">Start Shopping</Link>
+            </Button>
+          </div>
+        )}
+      </ProfileCard>
+    </div>
+  );
+
+  const renderWishlistContent = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900">My Wishlist</h2>
+        <p className="text-gray-500">Your saved items</p>
+      </div>
+
+      <ProfileCard title="Saved Items">
+        {wishlistImages.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {wishlistImages.map((image, index) => (
+              <div key={index} className="group relative">
+                <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                  <Image
+                    src={image}
+                    alt={`Wishlist item ${index + 1}`}
+                    width={200}
+                    height={200}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                  />
+                </div>
+                <div className="mt-2">
+                  <h4 className="font-medium text-sm">Product {index + 1}</h4>
+                  <p className="text-sm text-gray-500">$99.99</p>
+                </div>
+                <Button size="sm" className="w-full mt-2" variant="outline">
+                  Add to Cart
+                </Button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <Heart className="w-12 h-12 mx-auto text-gray-300" />
+            <h4 className="mt-4 text-gray-500">Your wishlist is empty</h4>
+            <p className="text-sm text-gray-400 mt-1">Save items you love for easy access later</p>
+            <Button className="mt-6" asChild>
+              <Link href="/">Start Shopping</Link>
+            </Button>
+          </div>
+        )}
+      </ProfileCard>
+    </div>
+  );
+
+  const renderSettingsContent = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900">Account Settings</h2>
+        <p className="text-gray-500">Manage your account preferences</p>
+      </div>
+
+      <ProfileCard title="Personal Information">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <div className="flex">
+              <input
+                type="text"
+                defaultValue={userData?.name || ''}
+                className="flex-1 rounded-l-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                placeholder="Enter your full name"
+              />
+              <Button className="rounded-l-none">Save</Button>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+            <div className="flex">
+              <input
+                type="email"
+                defaultValue={userData?.email || ''}
+                className="flex-1 rounded-l-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                placeholder="Enter your email"
+              />
+              <Button className="rounded-l-none">Update</Button>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+            <div className="flex">
+              <input
+                type="tel"
+                defaultValue={userData?.phone || ''}
+                className="flex-1 rounded-l-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                placeholder="Enter your phone number"
+              />
+              <Button className="rounded-l-none">Save</Button>
+            </div>
+          </div>
+        </div>
+      </ProfileCard>
+
+      <ProfileCard title="Change Password">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+            <input
+              type="password"
+              className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              placeholder="Enter current password"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+            <input
+              type="password"
+              className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              placeholder="Enter new password"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+            <input
+              type="password"
+              className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              placeholder="Confirm new password"
+            />
+          </div>
+          <div className="pt-2">
+            <Button>Update Password</Button>
+          </div>
+        </div>
+      </ProfileCard>
+    </div>
+  );
+
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
 
   if (!userData) {
     redirect('/login');
   }
 
-  const isAdmin = userData?.isAdmin;
-
-  const renderProfileContent = () => (
-    <div className="bg-white rounded-lg border-2 border-dashed border-blue-200 p-8">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Column */}
-        <div className="space-y-8">
-          {/* User Profile Summary */}
-          <div className="flex items-center justify-between p-6 bg-gray-50 rounded-lg">
-            <div className="flex items-center space-x-4">
-              <Image
-                src={userData?.avatar || '/about-image.jpg'}
-                alt="Profile"
-                width={80}
-                height={80}
-                className="rounded-full"
-              />
-              <div>
-                <h3 className="text-xl font-bold text-gray-900">{userData?.name || 'User'}</h3>
-                <p className="text-gray-600">{userData?.email || 'user@example.com'}</p>
-              </div>
-            </div>
-            <div className="flex space-x-3">
-              <Link className="flex items-center bg-black/20 px-2 rounded-lg" href="/profile/edit">
-                <Edit3 className="w-4 h-4 mr-2" />
-                Edit Profile
-              </Link>
-              <Button
-                variant="default"
-                size="sm"
-                onClick={() => {
-                  localStorage.removeItem('userData');
-                  window.location.href = '/';
-                }}
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </Button>
-            </div>
-          </div>
-
-          {/* Personal Information */}
-          <div>
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Personal Information</h3>
-            <div className="space-y-3">
-              <div>
-                <span className="text-sm text-gray-500">Name:</span>
-                <p className="font-medium">{userData?.name || 'User'}</p>
-              </div>
-              <div>
-                <span className="text-sm text-gray-500">Email:</span>
-                <p className="font-medium">{userData?.email || 'user@example.com'}</p>
-              </div>
-              <div>
-                <span className="text-sm text-gray-500">Address:</span>
-                <p className="font-medium">
-                  {userData?.address || 'House No. 0/0, Street No. 00, Sector G-7, Islamabad'}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Account Settings */}
-          <div>
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Account Settings</h3>
-            <div className="space-y-2">
-              <Link href="#" className="block text-blue-600 hover:text-blue-800">
-                Change Password
-              </Link>
-              <Link href="#" className="block text-blue-600 hover:text-blue-800">
-                Manage Notifications
-              </Link>
-              <Link href="#" className="block text-blue-600 hover:text-blue-800">
-                Privacy Settings
-              </Link>
-            </div>
-          </div>
-
-          {/* Help/Support */}
-          <div className="pt-4 border-t border-gray-200">
-            <p className="text-sm text-gray-600">
-              Need help? Visit{' '}
-              <a
-                href="mailto:Support@Axion.com"
-                className="text-blue-600 hover:text-blue-800 font-medium"
-              >
-                Support@Axion.com
-                <ExternalLink className="w-3 h-3 inline ml-1" />
-              </a>
-            </p>
-          </div>
-        </div>
-
-        {/* Right Column - Only show for non-admin users */}
-        {!isAdmin && (
-          <div className="space-y-8">
-            {/* Order History */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-900">Order History</h3>
-                <Link href="#" className="text-blue-600 hover:text-blue-800 text-sm">
-                  View All
-                </Link>
-              </div>
-              <div className="space-y-3">
-                {orderHistory.map((order) => (
-                  <div
-                    key={order.id}
-                    className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"
-                  >
-                    <Image
-                      src={order.image}
-                      alt={order.name}
-                      width={50}
-                      height={50}
-                      className="rounded-md"
-                    />
-                    <div className="flex-1">
-                      <p className="text-sm text-gray-500">Order #{order.id}</p>
-                      <p className="font-medium">{order.name}</p>
-                    </div>
-                    <Badge variant={order.status === 'Delivered' ? 'default' : 'secondary'}>
-                      {order.status}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Wishlist */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-900">Wishlist</h3>
-                <Link href="#" className="text-blue-600 hover:text-blue-800 text-sm">
-                  View All
-                </Link>
-              </div>
-              <div className="grid grid-cols-5 gap-2">
-                {wishlistImages.map((image, index) => (
-                  <div key={index} className="aspect-square rounded-lg overflow-hidden">
-                    <Image
-                      src={image}
-                      alt={`Wishlist item ${index + 1}`}
-                      width={60}
-                      height={60}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  const renderOrdersContent = () => (
-    <div className="bg-white rounded-lg border-2 border-dashed border-blue-200 p-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">All Orders</h2>
-        <Button>
-          <Plus className="w-4 h-4 mr-2" />
-          View All Orders
-        </Button>
-      </div>
-      <div className="space-y-4">
-        {orderHistory.map((order) => (
-          <div key={order.id} className="flex items-center space-x-4 p-4 border rounded-lg">
-            <Image
-              src={order.image}
-              alt={order.name}
-              width={60}
-              height={60}
-              className="rounded-md"
-            />
-            <div className="flex-1">
-              <h4 className="font-medium">{order.name}</h4>
-              <p className="text-sm text-gray-500">Order #{order.id}</p>
-            </div>
-            <Badge variant={order.status === 'Delivered' ? 'default' : 'secondary'}>
-              {order.status}
-            </Badge>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  const renderProductsContent = () => (
-    <div className="bg-white rounded-lg border-2 border-dashed border-blue-200 p-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Product Management</h2>
-        <AddButton
-          type="product"
-          onAdd={async (data) => {
-            const formData = new FormData();
-            Object.entries(data).forEach(([key, value]) => {
-              formData.append(key, value as string);
-            });
-            await product.create(formData);
-          }}
-        />
-      </div>
-      <p className="text-gray-600">Manage your product inventory, categories, and pricing.</p>
-    </div>
-  );
-
-  const renderUsersContent = () => (
-    <div className="bg-white rounded-lg border-2 border-dashed border-blue-200 p-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">User Management</h2>
-        <AddButton
-          type="user"
-          onAdd={async (data) => {
-            const formData = new FormData();
-            Object.entries(data).forEach(([key, value]) => {
-              formData.append(key, value as string);
-            });
-            await user.create(formData);
-          }}
-        />
-      </div>
-      <p className="text-gray-600">
-        Monitor user activity, manage roles, and handle customer support.
-      </p>
-    </div>
-  );
-
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'profile':
-        return renderProfileContent();
-      case 'orders':
-        return renderOrdersContent();
-      case 'products':
-        return renderProductsContent();
-      case 'users':
-        return renderUsersContent();
-      default:
-        return renderProfileContent();
-    }
-  };
-
+  // Main layout with sidebar and content
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Breadcrumb */}
-      <PageHeader title="My" titleHighlight='Profile'/>
-      <div className="flex">
-        {/* Admin Sidebar - Only show for admins */}
-        {isAdmin && (
-          <div className="w-64 min-h-screen bg-white border-r border-gray-200 p-6">
-            <div className="sticky top-8">
-              <div className="mb-6">
-                <h2 className="text-lg font-semibold flex items-center gap-2 mb-2">
-                  <UserCheck className="w-5 h-5" />
-                  Admin Panel
-                </h2>
-                <p className="text-sm text-gray-600">Welcome back, {userData?.name}</p>
-              </div>
-
-              <nav className="space-y-2">
-                <Button
-                  variant={activeTab === 'profile' ? 'default' : 'ghost'}
-                  className="w-full justify-start"
-                  onClick={() => setActiveTab('profile')}
-                >
-                  <Edit3 className="w-4 h-4 mr-2" />
-                  My Profile
-                </Button>
-                <Button
-                  variant={activeTab === 'orders' ? 'default' : 'ghost'}
-                  className="w-full justify-start"
-                  onClick={() => setActiveTab('orders')}
-                >
-                  <ShoppingCart className="w-4 h-4 mr-2" />
-                  All Orders
-                </Button>
-                <Button
-                  variant={activeTab === 'products' ? 'default' : 'ghost'}
-                  className="w-full justify-start"
-                  onClick={() => setActiveTab('products')}
-                >
-                  <Package className="w-4 h-4 mr-2" />
-                  Products
-                </Button>
-                <Button
-                  variant={activeTab === 'users' ? 'default' : 'ghost'}
-                  className="w-full justify-start"
-                  onClick={() => setActiveTab('users')}
-                >
-                  <Users className="w-4 h-4 mr-2" />
-                  Users
-                </Button>
-              </nav>
-            </div>
-          </div>
-        )}
-
-        {/* Main Content */}
-        <div className={`flex-1 ${isAdmin ? 'ml-0' : ''}`}>
-          <div className="max-w-6xl mx-auto">
-            
-
-            {/* Content */}
-            {renderContent()}
-          </div>
+    <div className="flex min-h-screen bg-gray-50">
+      <ProfileSidebar />
+      <main className="flex-1 p-6 md:p-8 overflow-auto">
+        <div className="max-w-4xl mx-auto">
+          {pathname === '/profile' && renderProfileContent()}
+          {pathname === '/orders' && renderOrdersContent()}
+          {pathname === '/wishlist' && renderWishlistContent()}
+          {pathname === '/settings' && renderSettingsContent()}
         </div>
-      </div>
+      </main>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 'use server';
 
 import dbConnect from '@/lib/db';
-import User from '@/models/User';
+import {User} from '@/models/User';
 import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
 

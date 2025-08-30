@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import PageHeader from '@/components/PageHeader';
-import { UserPlus, Eye, EyeOff } from 'lucide-react';
+import { UserPlus, Eye, EyeOff, Upload, X } from 'lucide-react';
+import Image from 'next/image';
+import { toast } from 'sonner';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -16,11 +18,14 @@ export default function RegisterPage() {
     name: '',
     email: '',
     password: '',
-    isAdmin: false
+    isAdmin: false,
+    avatar: null as File | null
   });
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -30,37 +35,119 @@ export default function RegisterPage() {
     }));
   };
 
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file (JPEG, PNG, etc.)');
+      return;
+    }
+
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size should be less than 5MB');
+      return;
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      avatar: file
+    }));
+
+    // Create preview URL
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPreviewUrl(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeImage = () => {
+    setFormData(prev => ({
+      ...prev,
+      avatar: null
+    }));
+    setPreviewUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setMessage('');
-
+    if (isLoading) return;
+    
     try {
-      // For now, we'll just store in localStorage for testing
-      // In a real app, you'd send this to your backend API
-      const userData = {
-        id: Date.now().toString(),
-        name: formData.name,
-        email: formData.email,
-        isAdmin: formData.isAdmin,
-        avatar: '/about-image.jpg',
-        address: '',
-        createdAt: new Date().toISOString()
-      };
-
-      // Store user data in localStorage (temporary solution)
-      localStorage.setItem('userData', JSON.stringify(userData));
+      setIsLoading(true);
       
-      setMessage('User registered successfully! Redirecting...');
-      
-      // Redirect to profile page after 2 seconds
-      setTimeout(() => {
-        router.push('/profile');
-      }, 2000);
+      await toast.promise(
+        (async () => {
+          let avatarUrl = '';
+          
+          // Upload image if exists
+          if (formData.avatar) {
+            const formDataToSend = new FormData();
+            formDataToSend.append('file', formData.avatar);
 
+            const uploadResponse = await fetch('/api/upload', {
+              method: 'POST',
+              body: formDataToSend,
+            });
+
+            if (!uploadResponse.ok) {
+              const error = await uploadResponse.json();
+              throw new Error(error.error || 'Failed to upload image');
+            }
+
+            const { fileUrl } = await uploadResponse.json();
+            avatarUrl = fileUrl;
+          }
+
+          // Create user in the database
+          const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: formData.name,
+              email: formData.email,
+              password: formData.password,
+              isAdmin: formData.isAdmin,
+              ...(avatarUrl && { avatar: { url: avatarUrl } })
+            }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || 'Failed to register user');
+          }
+          
+          // Return data for success handler
+          return data;
+        })(),
+        {
+          loading: 'Creating your account...',
+          success: (data) => {
+            // Redirect after successful registration
+            setTimeout(() => {
+              router.push(formData.isAdmin ? '/admin' : '/profile');
+            }, 1000);
+            return 'Registration successful! Redirecting...';
+          },
+          error: (err) => {
+            console.error('Registration error:', err);
+            return err.message || 'Failed to register. Please try again.';
+          }
+        }
+      );
+      
     } catch (error) {
-      setMessage('Error registering user. Please try again.');
-      console.error('Registration error:', error);
+      console.error('Unexpected error:', error);
+      toast.error('An unexpected error occurred');
     } finally {
       setIsLoading(false);
     }
@@ -87,6 +174,56 @@ export default function RegisterPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Profile Picture Upload */}
+              <div className="space-y-2">
+                <Label>Profile Picture</Label>
+                <div className="flex items-center gap-4">
+                  <div className="relative w-20 h-20 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
+                    {previewUrl ? (
+                      <>
+                        <Image
+                          src={previewUrl}
+                          alt="Profile preview"
+                          fill
+                          className="object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={removeImage}
+                          className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </>
+                    ) : (
+                      <Upload className="w-6 h-6 text-gray-400" />
+                    )}
+                  </div>
+                  <div>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      accept="image/*"
+                      className="hidden"
+                      id="avatar-upload"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="flex items-center gap-2"
+                    >
+                      <Upload className="w-4 h-4" />
+                      {formData.avatar ? 'Change' : 'Upload'} Photo
+                    </Button>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      JPG, PNG up to 5MB
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <Label htmlFor="name">Full Name</Label>
                 <Input
@@ -147,12 +284,15 @@ export default function RegisterPage() {
                   name="isAdmin"
                   checked={formData.isAdmin}
                   onCheckedChange={(checked) => 
-                    setFormData(prev => ({ ...prev, isAdmin: checked as boolean }))
+                    setFormData(prev => ({ ...prev, isAdmin: Boolean(checked) }))
                   }
                 />
-                <Label htmlFor="isAdmin" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Make this user an admin
-                </Label>
+                <label
+                  htmlFor="isAdmin"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Register as Admin (This will create an admin account with full access)
+                </label>
               </div>
 
               {message && (

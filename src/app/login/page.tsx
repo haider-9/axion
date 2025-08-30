@@ -1,37 +1,68 @@
 'use client';
 
-import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { signIn } = useAuth();
+
+  useEffect(() => {
+    toast('Welcome back! Please sign in', {
+      position: 'top-center',
+      style: {
+        background: '#ECFDF5',
+        color: '#065F46',
+        border: '1px solid #6EE7B7',
+        borderRadius: '0.5rem',
+        padding: '0.75rem 1rem',
+        fontSize: '0.875rem',
+        fontWeight: 500,
+      },
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    if (isLoading) return;
+    
     setIsLoading(true);
+    const toastId = toast.loading('Signing in...');
 
     try {
-      const result = await signIn('credentials', {
-        redirect: false,
-        email,
-        password,
-      });
-
-      if (result?.error) {
-        setError(result.error);
-      } else {
+      const result = await signIn(email.trim(), password.trim());
+      
+      if (result.success) {
+        toast.success('Login successful! Redirecting...', { id: toastId });
         router.push('/');
         router.refresh();
+      } else {
+        throw new Error(result.error || 'Login failed');
       }
-    } catch (error) {
-      setError('An error occurred. Please try again.');
+    } catch (error: any) {
+      console.error('Login error:', error);
+      
+      const errorMessage = error.message || 'An error occurred during login';
+      toast.error(errorMessage, { 
+        id: toastId,
+        duration: 3000,
+        position: 'top-center',
+        style: {
+          background: '#FEE2E2',
+          color: '#B91C1C',
+          border: '1px solid #FCA5A5',
+          borderRadius: '0.5rem',
+          padding: '0.75rem 1rem',
+          fontSize: '0.875rem',
+          fontWeight: 500,
+        },
+      });
     } finally {
       setIsLoading(false);
     }
@@ -49,20 +80,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm text-red-700">{error}</p>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Error messages are now handled by toast */}
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">

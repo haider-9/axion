@@ -1,4 +1,5 @@
 'use client';
+import AddButton from '@/components/AddButton';
 import PageHeader from '@/components/PageHeader';
 import Pagination from '@/components/Pagination';
 import Image from 'next/image';
@@ -88,7 +89,7 @@ export default function BlogPage() {
   const currentItems = blogPosts.slice(startIndex, startIndex + itemsPerPage);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       {/* Page Header */}
       <PageHeader
         title="Our"
@@ -99,6 +100,15 @@ export default function BlogPage() {
       {/* Blog Content */}
       <section className="py-20">
         <div className="max-w-[85rem] mx-auto px-4 sm:px-6">
+          <div className='flex justify-end mb-4'>
+            <AddButton
+              type="blog"
+              onAdd={async (data) => {
+                // For blog posts, you might want to create a separate action
+                console.log('Adding blog post:', data);
+              }}
+            />{' '}
+          </div>
           {/* Blog Posts Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-12">
             {currentItems.map((post) => (

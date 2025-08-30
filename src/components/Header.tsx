@@ -16,6 +16,7 @@ import {
 import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   Dialog,
   DialogContent,
@@ -52,24 +53,12 @@ interface UserData {
 const Header = () => {
   const pathname = usePathname();
   const [hovered, setHovered] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
   const [hideOnScroll, setHideOnScroll] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [userData, setUserData] = useState<UserData | null>(null);
-
-  // Get user data from localStorage
-  useEffect(() => {
-    const storedUserData = localStorage.getItem('userData');
-    if (storedUserData) {
-      try {
-        const parsedUserData = JSON.parse(storedUserData);
-        setUserData(parsedUserData);
-      } catch (error) {
-        console.error('Error parsing user data from localStorage:', error);
-      }
-    }
-  }, []);
+  const { user } = useAuth();
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Hide header when scrolling from top
   useEffect(() => {
@@ -101,6 +90,12 @@ const Header = () => {
     { name: 'Contact', href: '/contact' },
   ];
 
+  // Add dashboard link for admin users
+  const adminLinks = [
+    { name: 'Dashboard', href: '/dashboard' },
+    ...navLinks
+  ];
+
   const recentSearches = [
     'LED Strip Lights',
     'Smart Bulbs',
@@ -126,7 +121,7 @@ const Header = () => {
     <header
       className={cn(
         `fixed top-0 left-0 right-0 z-50 transition-all duration-300`,
-        [hideOnScroll ? '-translate-y-full' : 'translate-y-0']
+        hideOnScroll ? '-translate-y-full' : 'translate-y-0'
       )}
     >
       <div className={cn(
@@ -151,7 +146,7 @@ const Header = () => {
           "bg-black/50": scrolled,
         })}>
           <ul className="flex items-center justify-between relative z-10">
-            {navLinks.map((link) => {
+            {(user?.isAdmin ? adminLinks : navLinks).map((link) => {
               const isTarget = pillTarget === link.href;
 
               return (
@@ -212,7 +207,7 @@ const Header = () => {
 
               {/* Mobile Navigation Links */}
               <div className="space-y-3 px-2">
-                {navLinks.map((link) => (
+                {(user?.isAdmin ? adminLinks : navLinks).map((link) => (
                   <Link
                     key={link.name}
                     href={link.href}
@@ -257,10 +252,10 @@ const Header = () => {
                   Shopping Cart
                 </Link>
 
-                {userData ? (
+                {user ? (
                   <>
                     <Link
-                      href="/profile"
+                      href={user.isAdmin ? '/dashboard' : '/profile'}
                       onClick={() => setMobileMenuOpen(false)}
                       className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/90 hover:bg-slate-700/50 hover:text-white transition-all duration-200 hover:translate-x-1"
                     >
@@ -272,8 +267,6 @@ const Header = () => {
                     <button
                       onClick={() => {
                         localStorage.removeItem('userData');
-                        setUserData(null);
-                        setMobileMenuOpen(false);
                         window.location.href = '/';
                       }}
                       className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/90 hover:bg-slate-700/50 hover:text-white transition-all duration-200 hover:translate-x-1"
@@ -301,7 +294,7 @@ const Header = () => {
               {/* Footer */}
               <div className="mt-8 pt-6 border-t border-slate-700/50 px-4">
                 <p className="text-slate-400 text-sm text-center">
-                  © 2024 Axion Lighting Solutions
+                  2024 Axion Lighting Solutions
                 </p>
               </div>
             </SheetContent>
@@ -311,7 +304,7 @@ const Header = () => {
         {/* Icons */}
         <div className="hidden md:flex items-center space-x-1">
           {/* Search Dialog */}
-          <Dialog>
+          <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
             <DialogTrigger asChild>
               <button className="group relative p-2 rounded-full transition-all duration-300 hover:bg-white/20">
                 <Search
@@ -322,77 +315,60 @@ const Header = () => {
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-2" style={{ color: '#0C1E33' }}>
-                  <Search size={24} style={{ color: '#2CA6A4' }} />
-                  Search Products
-                </DialogTitle>
+                <DialogTitle className="text-[#0C1E33]">Search Products</DialogTitle>
               </DialogHeader>
-
               <div className="space-y-6">
                 <div className="relative">
-                  <Search
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2"
-                    size={20}
-                    style={{ color: '#2CA6A4' }}
-                  />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                   <input
                     type="text"
-                    placeholder="Search for lighting products, categories, or brands..."
+                    placeholder="Search for products..."
+                    className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2CA6A4]"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 rounded-lg border-2 focus:outline-none focus:border-[#2CA6A4] transition-colors"
-                    style={{ borderColor: '#E1B857', backgroundColor: 'white', color: '#0C1E33' }}
-                    autoFocus
                   />
                 </div>
 
-                <div className="space-y-4">
-                  <div>
-                    <h3
-                      className="flex items-center gap-2 font-medium mb-3"
-                      style={{ color: '#0C1E33' }}
-                    >
-                      <Clock size={16} style={{ color: '#2CA6A4' }} />
-                      Recent Searches
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {recentSearches.map((search, index) => (
-                        <button
-                          key={index}
-                          className="px-3 py-1 rounded-full text-sm transition-colors"
-                          style={{ backgroundColor: 'rgba(225, 184, 87, 0.2)', color: '#0C1E33' }}
-                          onClick={() => setSearchQuery(search)}
-                        >
+                <div>
+                  <h3 className="flex items-center gap-2 font-medium mb-3 text-[#0C1E33]">
+                    <Clock size={16} className="text-[#E1B857]" />
+                    Recent Searches
+                  </h3>
+                  <div className="space-y-2">
+                    {recentSearches.map((search, index) => (
+                      <button
+                        key={index}
+                        className="w-full text-left p-3 rounded-lg hover:bg-[#2CA6A4]/10 transition-colors"
+                        onClick={() => setSearchQuery(search)}
+                      >
+                        <div className="font-medium text-[#0C1E33]">
                           {search}
-                        </button>
-                      ))}
-                    </div>
+                        </div>
+                      </button>
+                    ))}
                   </div>
+                </div>
 
-                  <div>
-                    <h3
-                      className="flex items-center gap-2 font-medium mb-3"
-                      style={{ color: '#0C1E33' }}
-                    >
-                      <Star size={16} style={{ color: '#E1B857' }} />
-                      Popular Products
-                    </h3>
-                    <div className="space-y-2">
-                      {popularProducts.map((product, index) => (
-                        <button
-                          key={index}
-                          className="w-full text-left p-3 rounded-lg hover:bg-[#2CA6A4]/10 transition-colors"
-                          onClick={() => setSearchQuery(product.name)}
-                        >
-                          <div className="font-medium" style={{ color: '#0C1E33' }}>
-                            {product.name}
-                          </div>
-                          <div className="text-sm" style={{ color: '#2CA6A4' }}>
-                            {product.category}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
+                <div>
+                  <h3 className="flex items-center gap-2 font-medium mb-3 text-[#0C1E33]">
+                    <Star size={16} className="text-[#E1B857]" />
+                    Popular Products
+                  </h3>
+                  <div className="space-y-2">
+                    {popularProducts.map((product, index) => (
+                      <button
+                        key={index}
+                        className="w-full text-left p-3 rounded-lg hover:bg-[#2CA6A4]/10 transition-colors"
+                        onClick={() => setSearchQuery(product.name)}
+                      >
+                        <div className="font-medium text-[#0C1E33]">
+                          {product.name}
+                        </div>
+                        <div className="text-sm text-[#2CA6A4]">
+                          {product.category}
+                        </div>
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -494,7 +470,7 @@ const Header = () => {
           </DropdownMenu>
 
           {/* Profile Icon */}
-          <ProfileDropdown userData={userData} setUserData={setUserData} />
+          <ProfileDropdown userData={user} />
         </div>
       </div>
     </header>
@@ -502,7 +478,7 @@ const Header = () => {
 };
 
 // Profile Dropdown Component
-const ProfileDropdown = ({ userData, setUserData }: { userData: UserData | null; setUserData: (data: UserData | null) => void }) => {
+const ProfileDropdown = ({ userData }: { userData: any }) => {
   if (!userData) {
     return (
       <Link href="/register">
@@ -529,12 +505,14 @@ const ProfileDropdown = ({ userData, setUserData }: { userData: UserData | null;
       <DropdownMenuContent className="w-56 mt-2" align="end">
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{userData.name}</p>
-            <p className="text-xs leading-none text-muted-foreground">{userData.email}</p>
+            <p className="text-sm font-medium leading-none">{userData?.name}</p>
+            <p className="text-xs leading-none text-muted-foreground">
+              {userData?.email}
+            </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <Link href="/profile">
+        <Link href={userData.isAdmin ? '/dashboard' : '/profile'}>
           <DropdownMenuLabel className="cursor-pointer hover:bg-gray-100 rounded-sm px-2 py-1.5">
             Profile
           </DropdownMenuLabel>
@@ -543,7 +521,6 @@ const ProfileDropdown = ({ userData, setUserData }: { userData: UserData | null;
         <button
           onClick={() => {
             localStorage.removeItem('userData');
-            setUserData(null);
             window.location.href = '/';
           }}
           className="w-full text-left px-2 py-1.5 text-sm hover:bg-gray-100 rounded-sm cursor-pointer flex items-center gap-2"

@@ -1,6 +1,8 @@
 'use client';
 
 import { SessionProvider } from 'next-auth/react';
+import { Toaster } from 'sonner';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -8,7 +10,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
       refetchInterval={0} 
       refetchOnWindowFocus={false}
     >
-      {children}
+      <AuthProvider>
+        {children}
+        <Toaster position="top-center" richColors closeButton />
+      </AuthProvider>
     </SessionProvider>
   );
 }
